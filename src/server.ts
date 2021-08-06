@@ -15,8 +15,8 @@ const app = new App({
         cors(),
     ],
     routes: [
-        new HomeRoute(),
-        // new AuthRoute()
+        new HomeRoute('/'),
+        new AuthRoute('/auth')
     ]
 });
 

@@ -1,18 +1,19 @@
 import { Router } from 'express';
 import HomeController from '../controllers/homeController'
+import RouteModel from './routeModel/routeModel';
 
 
-class HomeRoute {
+class HomeRoute extends RouteModel {
     public router: Router;
-    public path: string;
 
-    constructor() {
-        this.path = '/'
+    constructor(path: string) {
+        super('/');
+        this.path = path;
         this.router = Router();
         this.initRoutes();
     }
 
-    private initRoutes() {
+    initRoutes() {
         this.router.get('/', new HomeController().getHome)
     };
 

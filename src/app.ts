@@ -1,17 +1,22 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { Application } from 'express';
 import HomeRoute from '../src/routes/homeRoute';
+import dotenv from 'dotenv';
+import connectDB from './config/db';
+import RouteModel from './routes/routeModel/routeModel';
 
 
 class App {
     public port: number;
     public app: Application;
 
-    constructor(appSetup: { port: number; middlewares: any, routes: HomeRoute[]} ) {
+    constructor(appSetup: { port: number; middlewares: any, routes: RouteModel[]} ) {
         this.app = express();
-        this.port = appSetup.port;
+        this.port = +process.env.PORT! || appSetup.port;
         this.useRoutes(appSetup.routes);
         this.useMiddlewares(appSetup.middlewares);
+        dotenv.config();
+        connectDB();
     };
 
     public listen() {
@@ -32,7 +37,7 @@ class App {
         });
     };
 
-    public allowCrossDomain(req: Request, res: Response, next: any) {
+    public allowCrossDomain(req: Request, res: Response, next: NextFunction) {
         res.header('Access-Control-Allow-Origin', "*");
         res.header('Access-Control-Allow-Headers', "*");
         next();

@@ -1,21 +1,22 @@
 import { Router } from 'express';
-import AuthController from '../controllers/authController'
+import AuthController from '../controllers/authController';
+import RouteModel from './routeModel/routeModel';
 
 
-class AuthRoute {
+class AuthRoute extends RouteModel {
     public router: Router;
-    public path: string;
 
-    constructor() {
-        this.path = '/auth'
+    constructor(path: string) {
+        super('/auth');
+        this.path = path;
         this.router = Router();
         this.initRoutes();
     }
 
-    private initRoutes() {
+    initRoutes() {
         this.router.post('/register', new AuthController().register);
-        this.router.post('/login', new AuthController().login);
-        this.router.post('/logout', new AuthController().logout);
+        // this.router.post('/login', new AuthController().login);
+        // this.router.post('/logout', new AuthController().logout);
     };
 
 };
