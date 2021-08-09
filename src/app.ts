@@ -13,8 +13,8 @@ class App {
     constructor(appSetup: { port: number; middlewares: any, routes: RouteModel[]} ) {
         this.app = express();
         this.port = +process.env.PORT! || appSetup.port;
-        this.useRoutes(appSetup.routes);
         this.useMiddlewares(appSetup.middlewares);
+        this.useRoutes(appSetup.routes);
         dotenv.config();
         connectDB();
     };
@@ -27,6 +27,7 @@ class App {
 
     private useMiddlewares(middlewares: any) {
         middlewares.forEach((middleware: any) => {
+            console.log(middleware);
             this.app.use(middleware);
         });
     };

@@ -10,13 +10,15 @@ import AuthRoute from '../src/routes/authRoute';
 const app = new App({
     port: 3000,
     middlewares: [
-        express.json(),
+        express.json({
+            type: "*/*"
+        }),
         express.urlencoded({ extended: true }),
         cors(),
     ],
     routes: [
         new HomeRoute('/'),
-        new AuthRoute('/auth')
+        new AuthRoute('/')
     ]
 });
 

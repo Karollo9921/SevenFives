@@ -7,7 +7,7 @@ class AuthRoute extends RouteModel {
     public router: Router;
 
     constructor(path: string) {
-        super('/auth');
+        super('/');
         this.path = path;
         this.router = Router();
         this.initRoutes();
