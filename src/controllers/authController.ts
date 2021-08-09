@@ -14,6 +14,8 @@ class AuthController {
         let uidMax: number[] = [];
         (await User.find({}, {uid: 1, _id: 0} ).sort({uid:-1}).limit(1)).forEach((u) => uidMax.push(+u.uid + 1));
         let uid = uidMax[0] || 1;
+        console.log(req.body);
+        // console.log(uid);
 
         //req.body
         let { login, password, password2 } = req.body;
@@ -28,31 +30,32 @@ class AuthController {
         // check if that user exists
         await User.findOne({ 
             login: login 
-        }).then(user => {
-            if (user) {
+        }).then(async (user) => {
+            if (!user) {
+                 // creating a new user
+                const newUser = new User({
+                    uid: uid,
+                    login: login,
+                    password: await bcrypt.hash(password, 10)
+                });
+                // saving user to database 
+                newUser.save().then(user => {
+                    return res.status(201).json({
+                        success: true,
+                        message: "User has been created"
+                        }).end();
+                }).catch((err) => res.json({
+                    message: `Catch-Save error: ${err}`
+                }));
+            } else {
                 return res.status(400).json({
                     message: "That User already exists"
                 }); 
             }
         })
-        
-        // creating a new user
-        const newUser = new User({
-            uid: uid,
-            login: login,
-            password: await bcrypt.hash(password, 10)
-        });
-
-        // saving user to database 
-        await newUser.save().then(user => {
-            return res.status(201).json({
-                success: true,
-                message: "User has been created"
-                })
-        });
-
-
-        
+        .catch((err) => res.json({
+            message: `Catch-FindOne error: ${err}`
+        }));
     };
 
 

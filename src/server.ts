@@ -11,7 +11,7 @@ const app = new App({
     port: 3000,
     middlewares: [
         express.json({
-            type: "*/*"
+            type: "application/json"
         }),
         express.urlencoded({ extended: true }),
         cors(),

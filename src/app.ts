@@ -27,7 +27,6 @@ class App {
 
     private useMiddlewares(middlewares: any) {
         middlewares.forEach((middleware: any) => {
-            console.log(middleware);
             this.app.use(middleware);
         });
     };
