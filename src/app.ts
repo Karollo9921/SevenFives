@@ -6,6 +6,7 @@ import connectDB from './config/db';
 import RouteModel from './routes/routeModel/routeModel';
 
 
+
 class App {
     public port: number;
     public app: Application;

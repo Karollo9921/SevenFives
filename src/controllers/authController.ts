@@ -9,7 +9,7 @@ class AuthController {
 
     }
 
-    async register(req: Request, res: Response) {
+    async postRegister(req: Request, res: Response) {
         //uid
         let uidMax: number[] = [];
         (await User.find({}, {uid: 1, _id: 0} ).sort({uid:-1}).limit(1)).forEach((u) => uidMax.push(+u.uid + 1));
@@ -23,7 +23,9 @@ class AuthController {
         //check password confirmation
         if (password !== password2) {
             return res.status(400).json({
-                message: "Password do not match"
+                success: false,
+                message: "Password do not match",
+                url: "/client/components/register/register.html"
             });
         }
     
@@ -42,14 +44,19 @@ class AuthController {
                 newUser.save().then(user => {
                     return res.status(201).json({
                         success: true,
-                        message: "User has been created"
+                        message: "User has been created",
+                        url: "/client/components/login/login.html"
                         }).end();
                 }).catch((err) => res.json({
-                    message: `Catch-Save error: ${err}`
+                    success: false,
+                    message: `Catch-Save error: ${err}`,
+                    url: "/client/components/register/register.html"
                 }));
             } else {
                 return res.status(400).json({
-                    message: "That User already exists"
+                    success: false,
+                    message: "That User already exists",
+                    url: "/client/components/register/register.html"
                 }); 
             }
         })
@@ -59,9 +66,53 @@ class AuthController {
     };
 
 
-    login(req: Request, res: Response) {
+    async login(req: Request, res: Response) {
+        //declaring body
+        let { login, password } = req.body;
         
-    }
+        //checking that User exists
+        await User.findOne({ login })
+        .then((user) => {
+            if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    message: `User ${req.body.login} does not exists`
+                })
+            } else {
+                bcrypt
+                    .compare(password, user.password)
+                    .then(compareResult => {
+                        if (compareResult) {
+                            return res.status(201).json({
+                                success: true,
+                                message: "You are logged in !",
+                                url: "/client/home.html"
+                            }).end();
+                        } else {
+                            return res.status(401).json({
+                                success: false,
+                                message: "Password do not match",
+                                url: "/client/components/login/login.html"
+                            })
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        return res.status(400).json({
+                            succes: false,
+                            message: `Error: ${err}`,
+                            url: "/client/components/login/login.html"
+                        })
+                    })
+            }
+        })
+        .catch(err => {
+            return res.status(401).json({
+                success: false,
+                message: `Error: ${err}`
+            })
+        });
+    };
 
 
     logout(req: Request, res: Response) {

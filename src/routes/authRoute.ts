@@ -14,7 +14,8 @@ class AuthRoute extends RouteModel {
     }
 
     initRoutes() {
-        this.router.post('/register', new AuthController().register);
+        this.router.post('/register', new AuthController().postRegister);
+        this.router.post('/login', new AuthController().login);
         // this.router.post('/login', new AuthController().login);
         // this.router.post('/logout', new AuthController().logout);
     };

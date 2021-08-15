@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="../../public/css/main.css">
+    <script src="login.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -22,7 +23,8 @@
             </div>
         </nav>
         <h1>Login</h1>
-        <form action="/login" method="POST">
+        <p id="message"></p>
+        <form action="http://localhost:3000/login"" method="POST">
             <div>
                 <label for="login">Login</label>
                 <input type="text" id="login" name="login" required>
@@ -31,7 +33,12 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>    
-            <button type="submit">Login</button>            
+            <!-- <button type="submit">Login</button>            -->
+            <input 
+                id="post-btn" 
+                type="submit" 
+                value="Login"
+            >
         </form>
         <p>You don't have an account? Go <a href="/client/components/register/register.html" class="btn">Register</a></p>  
     </div>

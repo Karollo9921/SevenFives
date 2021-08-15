@@ -1,16 +1,14 @@
-const registerBtn = document.getElementById('post-btn');
+const loginBtn = document.getElementById('post-btn');
 const loginInput = document.getElementById('login');
 const passwordInput = document.getElementById('password');
-const password2Input = document.getElementById('password2');
 
-register = async (clickEvent) => {
+login = async (clickEvent) => {
     clickEvent.preventDefault();
-    let url = 'http://localhost:3000/register';
+    let url = 'http://localhost:3000/login';
     let data = JSON.stringify(
         {
             login: loginInput.value,
-            password: passwordInput.value,
-            password2: password2Input.value
+            password: passwordInput.value
         }
     );
     const postData = await fetch(url, {
@@ -26,13 +24,14 @@ register = async (clickEvent) => {
         if (data.success) {
             window.location.href = data.url;
         } else {
+            // window.location.href = await data.url;
             document.getElementById('message').innerHTML = data.message
         }
     })
     .catch(err => {
         document.getElementById('message').innerHTML = err
     });
-    return postData().json();
+    // return postData.json();
 };
 
-document.getElementById('post-btn').addEventListener('click', register);
+document.getElementById('post-btn').addEventListener('click', login);
