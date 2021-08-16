@@ -13,6 +13,7 @@ login = async (clickEvent) => {
     );
     const postData = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
