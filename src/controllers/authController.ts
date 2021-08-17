@@ -11,7 +11,7 @@ class AuthController {
     }
 
     getRegister(req: Request, res: Response) {
-        console.log(req.session.isLoggedIn);
+        console.log(req.session);
         return res.json({
             isLoggedIn: req.session.isLoggedIn,
             user: req.session.user
