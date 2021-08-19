@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
 import bcrypt from 'bcrypt';
-import SessionData from '../interfaces/userSession';
+
+
 
 
 class AuthController {
@@ -95,21 +96,11 @@ class AuthController {
                         if (compareResult) {
                             req.session.user = user;
                             req.session.isLoggedIn = true;
-                            return req.session.save((err) => {
-                                if (req.session.isLoggedIn) {
-                                    console.log(req.session);
-                                    res.status(201).json({
-                                            success: true,
-                                            message: "You are logged in !",
-                                            url: "/client/home.html"
-                                        })
-                                } else {
-                                    res.status(401).json({
-                                        success: false,
-                                        message: "You are not logged in.",
-                                        url: "/client/components/login/login.html"
-                                    })
-                                }
+                            return res.status(201).json({
+                                success: true,
+                                message: "You are logged in !",
+                                url: "/client/home.html",
+                                session: req.session
                             });
                         } else {
                             return res.status(401).json({

@@ -71,7 +71,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "client/**/*.ts"
+    // "client/**/*.ts"
   ],
   "exclude": [
     "node_modules"

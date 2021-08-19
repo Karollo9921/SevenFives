@@ -14,10 +14,11 @@ class App {
     constructor(appSetup: { port: number; middlewares: any, routes: RouteModel[] }) {
         this.app = express();
         this.port = +process.env.PORT! || appSetup.port;
-        this.useMiddlewares(appSetup.middlewares);
-        this.useRoutes(appSetup.routes);
         dotenv.config();
         connectDB();
+        this.app.enable('trust proxy');
+        this.useMiddlewares(appSetup.middlewares);
+        this.useRoutes(appSetup.routes);
     };
 
     public listen() {
@@ -34,9 +35,16 @@ class App {
 
     private useRoutes(routes: HomeRoute[]) {
         routes.forEach((route: HomeRoute) => {
-            this.app.use(route.path, route.router);
+            this.app.use(route.path, this.allowCrossDomain, route.router);
         });
     };
+
+    public allowCrossDomain(req: Request, res: Response, next: NextFunction) {
+        res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        next();
+      }
 
     
 };

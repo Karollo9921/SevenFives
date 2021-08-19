@@ -8,8 +8,9 @@ class HomeController {
     }
 
     getHome(req: Request, res: Response) {
-        console.log(req.session);   
+        console.log(req.sessionID);   
         res.json({ isLoggedId: req.session.isLoggedIn, user: req.session.user })
+        // res.json({ value1: "home11", value2: "home21" })
     }
 
 };
