@@ -36,7 +36,7 @@ class AuthController {
             return res.status(400).json({
                 success: false,
                 message: "Password do not match",
-                url: "/client/components/register/register.html"
+                url: "http://localhost:5000/register"
             });
         }
     
@@ -56,18 +56,18 @@ class AuthController {
                     return res.status(201).json({
                         success: true,
                         message: "User has been created",
-                        url: "/client/components/login/login.html"
+                        url: "http://localhost:5000/login"
                         }).end();
                 }).catch((err) => res.json({
                     success: false,
                     message: `Catch-Save error: ${err}`,
-                    url: "/client/components/register/register.html"
+                    url: "http://localhost:5000/register"
                 }));
             } else {
                 return res.status(400).json({
                     success: false,
                     message: "That User already exists",
-                    url: "/client/components/register/register.html"
+                    url: "http://localhost:5000/register"
                 }); 
             }
         })
@@ -99,14 +99,14 @@ class AuthController {
                             return res.status(201).json({
                                 success: true,
                                 message: "You are logged in !",
-                                url: "/client/home.html",
+                                url: "http://localhost:5000",
                                 session: req.session
                             });
                         } else {
                             return res.status(401).json({
                                 success: false,
                                 message: "Password do not match",
-                                url: "/client/components/login/login.html"
+                                url: "http://localhost:5000/login"
                             })
                         }
                     })
@@ -115,7 +115,7 @@ class AuthController {
                         return res.status(400).json({
                             succes: false,
                             message: `Error: ${err}`,
-                            url: "/client/components/login/login.html"
+                            url: "http://localhost:5000/login"
                         })
                     })
             }

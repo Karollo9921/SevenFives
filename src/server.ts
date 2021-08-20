@@ -15,7 +15,7 @@ const app = new App({
     middlewares: [
         cors(
             { 
-                origin: "http://127.0.0.1:5500",
+                origin: "http://localhost:5000",
                 methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
                 credentials: true 
             }
@@ -24,7 +24,7 @@ const app = new App({
         session(
             { 
                 secret: 'my secret', 
-                resave: true,
+                resave: false,
                 saveUninitialized: false,
                 // proxy: true,
                 // rolling: false,
