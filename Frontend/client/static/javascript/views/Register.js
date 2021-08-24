@@ -36,6 +36,36 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
+        dataFromServer = async () => {
+            console.log("Hello!")
+            let url = 'http://localhost:3000/register';
+            await axios.get(url, {
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                withCredentials: true
+              })
+            .then(response => {
+                console.log(document.getElementsByClassName('login-register'));
+                if (response?.data?.isLoggedIn) {
+                    window.location.href = response.data.url;
+                    document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
+                    document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
+                    document.getElementById('logout').style.visibility = "visible";
+                } else {
+                    document.getElementsByClassName('login-register')[0].style.visibility = "visible";
+                    document.getElementsByClassName('login-register')[1].style.visibility = "visible";
+                    document.getElementById('logout').style.visibility = "hidden";                   
+                }
+            })
+            .catch(err => {
+                document.getElementById('home-data').innerHTML = err
+            });
+        };
+        
+        dataFromServer();
+
+
         const registerBtn = document.getElementById('post-btn');
         const loginInput = document.getElementById('login');
         const passwordInput = document.getElementById('password');

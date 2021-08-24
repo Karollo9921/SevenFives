@@ -15,7 +15,8 @@ class AuthController {
         console.log(req.session);
         return res.json({
             isLoggedIn: req.session.isLoggedIn,
-            user: req.session.user
+            user: req.session.user,
+            url: "http://localhost:5000/"
         });
     };
 
@@ -77,7 +78,15 @@ class AuthController {
     };
 
 
-    async login(req: Request, res: Response) {
+    getLogin(req: Request, res: Response) {
+        return res.json({
+            isLoggedIn: req.session.isLoggedIn,
+            user: req.session.user,
+            url: "http://localhost:5000/"
+        });        
+    }
+
+    async postLogin(req: Request, res: Response) {
         //declaring body
         let { login, password } = req.body;
         
@@ -130,8 +139,18 @@ class AuthController {
 
 
     logout(req: Request, res: Response) {
-        
-    }
+        req.session.destroy((err) => {
+            if (err) {
+                res.status(404).json({
+                    message: `Error: ${err}`
+                })
+            }
+            res.status(200).json({
+                success: true,
+                url: "http://localhost:5000"
+            })
+        })
+    };
 
 };
 

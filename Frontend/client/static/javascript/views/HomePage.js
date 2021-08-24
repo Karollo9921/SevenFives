@@ -24,7 +24,17 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
-                document.getElementById('home-data').innerHTML = JSON.stringify(response.data)
+                console.log(document.getElementsByClassName('login-register'));
+                document.getElementById('home-data').innerHTML = (JSON.stringify(response?.data?.isLoggedIn) || "Login Or Get") + " " + (JSON.stringify(response?.data?.user?.login) || "Account !");
+                if (response?.data?.isLoggedIn) {
+                    document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
+                    document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
+                    document.getElementById('logout').style.visibility = "visible";
+                } else {
+                    document.getElementsByClassName('login-register')[0].style.visibility = "visible";
+                    document.getElementsByClassName('login-register')[1].style.visibility = "visible";
+                    document.getElementById('logout').style.visibility = "hidden";                   
+                }
             })
             .catch(err => {
                 document.getElementById('home-data').innerHTML = err
@@ -32,6 +42,31 @@ export default class extends AbstractView {
         };
         
         dataFromServer();
+
+        const logoutBtn = document.getElementById('logout-btn');
+
+        logout = async (clickEvent) => {
+            clickEvent.preventDefault();
+            let url = 'http://localhost:3000/logout';
+            await axios.post(url, { }, {
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                withCredentials: true
+              })
+            .then(response => {
+                if (response.data.success) {
+                    window.location.href = response.data.url;
+                } else {
+                    document.getElementById('message').innerHTML = response.data.message
+                }
+            })
+            .catch(err => {
+                document.getElementById('message').innerHTML = err
+            });
+        };
+
+        logoutBtn.addEventListener('click', logout);
         `
     }
 }

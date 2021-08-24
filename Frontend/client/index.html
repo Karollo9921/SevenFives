@@ -16,8 +16,11 @@
                     <a href="">Let's Play!</a>
                 </div>
                 <div>
-                    <a href="/login" data-link>Login</a>
-                    <a href="/register" class="btn" data-link>Register</a>
+                    <a href="/login" class="login-register" style="visibility: hidden;" data-link>Login</a>
+                    <a href="/register" class="btn login-register" style="visibility: hidden;" data-link>Register</a>
+                    <form id="logout" action="http://localhost:3000/logout" method="post" style="visibility: hidden;">
+                        <button id="logout-btn" type="submit">Logout</button>
+                    </form>
                 </div>
             </div>
         </nav>

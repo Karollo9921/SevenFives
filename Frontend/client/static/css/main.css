@@ -36,6 +36,19 @@
     margin-left: 40px;
 }
 
+.nav-links #logout {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 40px;
+}
+
+.nav-links button {
+    background: #fff;
+    color: #000;
+    padding: 8px 30px;
+    border-radius: 4px;
+}
+
 
 .nav-links .btn {
     background: #fff;
