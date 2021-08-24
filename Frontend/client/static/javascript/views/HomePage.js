@@ -1,8 +1,8 @@
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
-    constructor() {
-        super();
+    constructor(params) {
+        super(params);
         this.setTitle("HomePage");
     }
 
@@ -17,6 +17,7 @@ export default class extends AbstractView {
         dataFromServer = async () => {
             console.log("Hello!")
             let url = 'http://localhost:3000/';
+            let userUrl = 'http://localhost:5000/user/';
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -29,10 +30,13 @@ export default class extends AbstractView {
                 if (response?.data?.isLoggedIn) {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
+                    document.getElementById('user-route').style.visibility = "visible";
+                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
                     document.getElementById('logout').style.visibility = "visible";
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
+                    document.getElementById('user-route').style.visibility = "hidden";
                     document.getElementById('logout').style.visibility = "hidden";                   
                 }
             })

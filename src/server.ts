@@ -1,5 +1,7 @@
 import HomeRoute from '../src/routes/homeRoute';
 import AuthRoute from '../src/routes/authRoute';
+import UserRoute from '../src/routes/userRoute';
+
 
 import App from './app';
 import express from 'express';
@@ -33,7 +35,8 @@ const app = new App({
     ],
     routes: [
         new HomeRoute('/'),
-        new AuthRoute('/')
+        new AuthRoute('/'),
+        new UserRoute('/'),
     ]
 });
 
