@@ -1,6 +1,7 @@
 import HomeRoute from '../src/routes/homeRoute';
 import AuthRoute from '../src/routes/authRoute';
 import UserRoute from '../src/routes/userRoute';
+import PlayRoute from './routes/playRoute';
 
 
 import App from './app';
@@ -37,6 +38,7 @@ const app = new App({
         new HomeRoute('/'),
         new AuthRoute('/'),
         new UserRoute('/'),
+        new PlayRoute('/'),
     ]
 });
 

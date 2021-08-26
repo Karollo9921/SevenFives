@@ -1,40 +1,24 @@
-import AbstractView from "./AbstractView.js";
+import AbstractView from "../AbstractView.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Login");
+        this.setTitle("User Profile");
     }
 
     async getHtml() {
         return `
-        <h1>Login</h1>
-        <p id="message"></p>
-        <form action="http://localhost:3000/login" method="POST">
-            <div>
-                <label for="login">Login</label>
-                <input type="text" id="login" name="login" required>
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>    
-            <!-- <button type="submit">Login</button>            -->
-            <input 
-                id="post-btn" 
-                type="submit" 
-                value="Login"
-            >
-        </form>
-        <p>You don't have an account? Go <a href="/register" class="btn">Register</a></p>
+        <h3 id="user-login">User Login: </h3>
         `
     }
 
     async addScript() {
         return `
         dataFromServer = async () => {
-            console.log("Hello!")
-            let url = 'http://localhost:3000/login';
+            let url = 'http://localhost:3000/user/' + window.location.href.substring(27, window.location.href.length);
+            let userUrl = 'http://localhost:5000/user/';
+            console.log("Hello!");
+            console.log(url);
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -42,35 +26,41 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
-                console.log(document.getElementsByClassName('login-register'));
+                console.log("This is my response: " + response);
                 if (response?.data?.isLoggedIn) {
-                    window.location.href = response.data.url;
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
+                    document.getElementById('user-route').style.visibility = "visible";
                     document.getElementById('logout').style.visibility = "visible";
+                    document.getElementById('play').style.visibility = "visible";
+                    document.getElementById('user-login').innerText += " " + response?.data?.login
+                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.loggedUser?.uid);
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
+                    document.getElementById('play').style.visibility = "hidden";
+                    document.getElementById('user-route').style.visibility = "hidden";
                     document.getElementById('logout').style.visibility = "hidden";                   
                 }
             })
             .catch(err => {
-                document.getElementById('home-data').innerHTML = err
+                console.log(typeof err);
+                if ((err.toString().substr(err.toString().length - 3) == 404)) {
+                    window.location.href = "http://localhost:5000/404";
+                } else {
+                    console.log("This is my error: " + err)
+                }
             });
         };
         
         dataFromServer();
 
+        const logoutBtn = document.getElementById('logout-btn');
 
-        const loginBtn = document.getElementById('post-btn');
-        const loginInput = document.getElementById('login');
-        const passwordInput = document.getElementById('password');
-
-
-        login = async (clickEvent) => {
+        logout = async (clickEvent) => {
             clickEvent.preventDefault();
-            let url = 'http://localhost:3000/login';
-            await axios.post(url, { login: loginInput.value, password: passwordInput.value }, {
+            let url = 'http://localhost:3000/logout';
+            await axios.post(url, { }, {
                 headers: {
                   'Content-Type': 'application/json'
                 },
@@ -79,7 +69,6 @@ export default class extends AbstractView {
             .then(response => {
                 if (response.data.success) {
                     window.location.href = response.data.url;
-                    // console.log(response.data.session);
                 } else {
                     document.getElementById('message').innerHTML = response.data.message
                 }
@@ -89,7 +78,7 @@ export default class extends AbstractView {
             });
         };
 
-        document.getElementById('post-btn').addEventListener('click', login);
+        logoutBtn.addEventListener('click', logout);       
         `
     }
 }

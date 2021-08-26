@@ -1,24 +1,23 @@
-import AbstractView from "./AbstractView.js";
+import AbstractView from "../AbstractView.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("User Profile");
+        this.setTitle("HomePage");
     }
 
     async getHtml() {
         return `
-        <h3 id="user-login">User Login: </h3>
+        <div id="home-data"><p>Logged User: </p></div>
         `
     }
 
     async addScript() {
         return `
         dataFromServer = async () => {
-            let url = 'http://localhost:3000/user/' + window.location.href.substring(27, window.location.href.length);
+            console.log("Hello!")
+            let url = 'http://localhost:3000/';
             let userUrl = 'http://localhost:5000/user/';
-            console.log("Hello!");
-            console.log(url);
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -26,23 +25,25 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
-                console.log(response);
+                console.log(document.getElementsByClassName('login-register'));
+                document.getElementById('home-data').innerHTML = (JSON.stringify(response?.data?.isLoggedIn) || "Login Or Get") + " " + (JSON.stringify(response?.data?.user?.login) || "Account !");
                 if (response?.data?.isLoggedIn) {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
+                    document.getElementById('play').style.visibility = "visible";
                     document.getElementById('user-route').style.visibility = "visible";
+                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
                     document.getElementById('logout').style.visibility = "visible";
-                    document.getElementById('user-login').innerText += " " + response?.data?.login
-                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.uid);
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
                     document.getElementById('user-route').style.visibility = "hidden";
-                    document.getElementById('logout').style.visibility = "hidden";                   
+                    document.getElementById('logout').style.visibility = "hidden";
+                    document.getElementById('play').style.visibility = "hidden";                   
                 }
             })
             .catch(err => {
-                console.log(err)
+                document.getElementById('home-data').innerHTML = err
             });
         };
         
@@ -71,7 +72,7 @@ export default class extends AbstractView {
             });
         };
 
-        logoutBtn.addEventListener('click', logout);       
+        logoutBtn.addEventListener('click', logout);
         `
     }
 }

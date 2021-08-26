@@ -1,4 +1,4 @@
-import AbstractView from "./AbstractView.js";
+import AbstractView from "../AbstractView.js";
 
 export default class extends AbstractView {
     constructor(params) {
@@ -52,10 +52,12 @@ export default class extends AbstractView {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
                     document.getElementById('logout').style.visibility = "visible";
+                    document.getElementById('play').style.visibility = "visible";
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
-                    document.getElementById('logout').style.visibility = "hidden";                   
+                    document.getElementById('logout').style.visibility = "hidden"; 
+                    document.getElementById('play').style.visibility = "hidden";                  
                 }
             })
             .catch(err => {

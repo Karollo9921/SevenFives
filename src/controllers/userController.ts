@@ -24,6 +24,7 @@ class UserController {
                 if (!user) {
                     return res.status(404).json({
                         succes: false,
+                        isLoggedIn: req.session.isLoggedIn,
                         url: "http://localhost:5000/404"
                     });
                 }
@@ -32,12 +33,14 @@ class UserController {
                     success: true,
                     uid: user.uid,
                     login: user.login,
-                    isLoggedIn: req.session.isLoggedIn
+                    isLoggedIn: req.session.isLoggedIn,
+                    loggedUser: req.session.user
                 });
             })
             .catch((err) => {
                 return res.status(400).json({
                     succes: false,
+                    isLoggedIn: req.session.isLoggedIn,
                     message: `Error: ${err}`
                 })
             });

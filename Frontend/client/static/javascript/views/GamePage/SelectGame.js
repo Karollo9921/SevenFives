@@ -1,23 +1,27 @@
-import AbstractView from "./AbstractView.js";
+import AbstractView from "../AbstractView.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("HomePage");
+        this.setTitle("Select your game !");
     }
 
     async getHtml() {
         return `
-        <div id="home-data"><p>Logged User: </p></div>
+        <div class="select"> 
+            <a id="single-player" class="btn" href="/play/single-player">Single Player - Play with Bots !</a>
+            <a id="multi-player" class="btn" href="">Multi player - Play with other People !</a>
+        </div>
         `
     }
 
     async addScript() {
         return `
         dataFromServer = async () => {
-            console.log("Hello!")
-            let url = 'http://localhost:3000/';
+            let url = 'http://localhost:3000/play'
             let userUrl = 'http://localhost:5000/user/';
+            console.log("Hello!");
+            console.log(url);
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -25,23 +29,32 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
-                console.log(document.getElementsByClassName('login-register'));
-                document.getElementById('home-data').innerHTML = (JSON.stringify(response?.data?.isLoggedIn) || "Login Or Get") + " " + (JSON.stringify(response?.data?.user?.login) || "Account !");
+                console.log("This is my response: " + response);
                 if (response?.data?.isLoggedIn) {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
                     document.getElementById('user-route').style.visibility = "visible";
-                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
                     document.getElementById('logout').style.visibility = "visible";
+                    document.getElementById('play').style.visibility = "visible";
+                    // document.getElementById('user-login').innerText += " " + response?.data?.user.login
+                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
+                    document.getElementById('play').style.visibility = "hidden";
                     document.getElementById('user-route').style.visibility = "hidden";
                     document.getElementById('logout').style.visibility = "hidden";                   
                 }
             })
             .catch(err => {
-                document.getElementById('home-data').innerHTML = err
+                console.log(err);
+                console.log(err.toString().substr(err.toString().length - 3) == 404)
+                if ((err.toString().substr(err.toString().length - 3) == 404)) {
+                    window.location.href = "http://localhost:5000/404";
+                    console.log("Am I here?")
+                } else {
+                    return console.log("This is my error: " + err)
+                }
             });
         };
         

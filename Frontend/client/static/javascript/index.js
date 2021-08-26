@@ -1,8 +1,10 @@
-import HomePage from './views/HomePage.js';
-import Login from './views/Login.js';
-import Register from './views/Register.js';
-import User from './views/User.js';
-import NotFound from './views/NotFound.js';
+import HomePage from './views/HomePage/HomePage.js';
+import Login from './views/AuthPage/Login.js';
+import Register from './views/AuthPage/Register.js';
+import User from './views/UserPage/User.js';
+import NotFound from './views/404/NotFound.js';
+import SelectGame from './views/GamePage/SelectGame.js';
+import SinglePlayer from './views/GamePage/SinglePlayer/SinglePlayer.js';
 
 
 
@@ -28,7 +30,9 @@ const router = async () => {
         { path: "/", view: HomePage },
         { path: "/login", view: Login },
         { path: "/register", view: Register },
-        { path: "/user/:id", view: User }  
+        { path: "/user/:id", view: User },
+        { path: "/play", view: SelectGame },
+        { path: "/play/single-player", view: SinglePlayer },
     ];
 
     // choose our route
@@ -65,6 +69,7 @@ window.addEventListener("popstate", router);
 // load router after click buttom and load DOM
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
+        console.log(e.target.ourRoutes("[data-link]"));
         if (e.target.ourRoutes("[data-link]")) {
             e.preventDefault();
             navigateTo(e.target.href);
