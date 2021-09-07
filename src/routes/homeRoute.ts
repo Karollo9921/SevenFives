@@ -13,7 +13,7 @@ class HomeRoute extends RouteModel {
         this.initRoutes();
     }
 
-    initRoutes() {
+    protected initRoutes() {
         this.router.get('/', new HomeController().getHome)
     };
 

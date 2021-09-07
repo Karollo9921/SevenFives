@@ -13,7 +13,7 @@ class AuthRoute extends RouteModel {
         this.initRoutes();
     }
 
-    initRoutes() {
+    protected initRoutes() {
         this.router.get('/register', new AuthController().getRegister);
         this.router.post('/register', new AuthController().postRegister);
         this.router.get('/login', new AuthController().getLogin);

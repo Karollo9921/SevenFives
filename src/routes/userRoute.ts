@@ -13,7 +13,7 @@ class UserRoute extends RouteModel {
         this.initRoutes();
     }
 
-    initRoutes() {
+    protected initRoutes() {
         this.router.get('/user/:id', new UserController().getUser);
     };
 

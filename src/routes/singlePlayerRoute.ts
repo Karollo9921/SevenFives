@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import PlayController from '../controllers/playController'
+import SinglePlayerController from '../controllers/singlePlayerController'
 import RouteModel from './routeModel/routeModel';
 
 
-class PlayRoute extends RouteModel {
+class SinglePlayer extends RouteModel {
     public router: Router;
 
     constructor(path: string) {
@@ -14,9 +14,9 @@ class PlayRoute extends RouteModel {
     }
 
     protected initRoutes() {
-        this.router.get('/play', new PlayController().getSelectGame)
+        this.router.get('/play/single-player', new SinglePlayerController().getSinglePlayer)
     };
 
 };
 
-export default PlayRoute;
+export default SinglePlayer;

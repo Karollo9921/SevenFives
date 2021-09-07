@@ -1,9 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
+import RouteModel from './routes/routeModel/routeModel';
 import { Application } from 'express';
-import HomeRoute from '../src/routes/homeRoute';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db';
-import RouteModel from './routes/routeModel/routeModel';
 
 
 
@@ -33,8 +32,8 @@ class App {
         });
     };
 
-    private useRoutes(routes: HomeRoute[]) {
-        routes.forEach((route: HomeRoute) => {
+    private useRoutes(routes: RouteModel[]) {
+        routes.forEach((route: RouteModel) => {
             this.app.use(route.path, this.allowCrossDomain, route.router);
         });
     };

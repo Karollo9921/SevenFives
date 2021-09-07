@@ -20,8 +20,6 @@ export default class extends AbstractView {
         dataFromServer = async () => {
             let url = 'http://localhost:3000/play'
             let userUrl = 'http://localhost:5000/user/';
-            console.log("Hello!");
-            console.log(url);
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -29,14 +27,12 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
-                console.log("This is my response: " + response);
                 if (response?.data?.isLoggedIn) {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
                     document.getElementById('user-route').style.visibility = "visible";
                     document.getElementById('logout').style.visibility = "visible";
                     document.getElementById('play').style.visibility = "visible";
-                    // document.getElementById('user-login').innerText += " " + response?.data?.user.login
                     document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";

@@ -10,6 +10,6 @@ export default abstract class RouteModel {
         this.initRoutes();
     }
 
-    abstract initRoutes(): void;
+    protected abstract initRoutes(): void;
 
 }

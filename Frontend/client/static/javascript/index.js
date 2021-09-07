@@ -52,14 +52,20 @@ const router = async () => {
     }
 
     const view = new ourRoute.route.view(getParams(ourRoute));
-
     document.querySelector('#app').innerHTML = await view.getHtml();
- 
+
     //Adding a script tag
+    const scriptModule = document.createElement('script');
+    if (ourRoute.route.path === '/play/single-player') {
+        scriptModule.setAttribute('type', 'module');
+        scriptModule.src = '/static/javascript/single-player-game.js'
+        document.body.appendChild(scriptModule);
+    }
+
     const script = document.createElement('script');
     script.setAttribute('type', 'text/javascript');
-    script.setAttribute('defer', 'defer');
     script.text = await view.addScript();
+    script.setAttribute('defer', 'defer');
     document.body.appendChild(script);
 
 };
@@ -69,7 +75,6 @@ window.addEventListener("popstate", router);
 // load router after click buttom and load DOM
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
-        console.log(e.target.ourRoutes("[data-link]"));
         if (e.target.ourRoutes("[data-link]")) {
             e.preventDefault();
             navigateTo(e.target.href);
