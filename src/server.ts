@@ -8,11 +8,16 @@ import MultiPlayerLobby from './routes/multiPlayerLobbyRoute';
 
 import App from './app';
 import express from 'express';
+import * as http from 'http';
 import cors from 'cors';
 import session from 'express-session';
 import { store } from './config/db';
 import cookieParser from 'cookie-parser';
 import SessionData from './interfaces/userSession';
+
+
+import * as socketio from 'socket.io';
+
 
 
 const app = new App({
@@ -44,5 +49,20 @@ const app = new App({
 });
 
 
-app.listen();
+const io: socketio.Server = new socketio.Server({
+    cors: {
+        origin: "http://localhost:5000"
+    }
+});
+
+const server: http.Server = app.listen();
+io.attach(server);
+
+io.of('/play/multi-player-lobby').on('connection', (socket: socketio.Socket) => {
+    socket.emit('messageFromServer', { data: "Welcome to the socketio server" });
+    socket.on('dataToServer', (dataFromClient) => {
+        console.log(dataFromClient)
+    });
+});
+
 

@@ -20,7 +20,7 @@ class App {
     };
 
     public listen() {
-        this.app.listen(this.port, () => {
+        return this.app.listen(this.port, () => {
             console.log(`This server is listening on port ${this.port}`);
         })
     };
