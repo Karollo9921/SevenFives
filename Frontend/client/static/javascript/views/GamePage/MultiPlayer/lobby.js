@@ -1,16 +1,37 @@
-import AbstractView from "../AbstractView.js";
+import AbstractView from "../../AbstractView.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Select your game !");
+        this.setTitle("Let's Play !");
     }
 
     async getHtml() {
         return `
-        <div class="select"> 
-            <a id="single-player" class="btn" href="/play/single-player">Single Player - Play with Bots !</a>
-            <a id="multi-player" class="btn" href="/play/multi-player-lobby">Multi player - Play with other People !</a>
+        <div class="grid-lobby">
+            <div class="chat">
+                <p><span class="nickname">Karollo</span><span class="message">: Hello !</span></p>
+            </div>
+            <div class="logged-in-players">
+                <ul>
+                    <li><div class="green"></div> <p>Karollo</p> </li>
+                    <li><div class="green"></div> <p>Karollo 2</p></li>
+                </ul>
+            </div>
+            <div class="create-game">
+                <form id="create" action="http://localhost:3000/play/:id" method="post">
+                    <button id="create-btn" type="submit">Create a Game</button>
+                </form>
+            </div>
+            <div class="input-message">
+                <input type="text" id="chat-message" name="chat-message" required>
+                <input id="post-btn" type="submit" value="Send Message">
+            </div>
+            <div class="list-of-games">
+                <ul>
+                    <li><p>Game Crated by Karollo For 5 Players </p><p claas="slots">1/5</p><a href="/play/:id" class="join-btn">JOIN</a></li>
+                </ul>
+            </div>
         </div>
         `
     }
@@ -18,8 +39,10 @@ export default class extends AbstractView {
     async addScript() {
         return `
         dataFromServer = async () => {
-            let url = 'http://localhost:3000/play'
+            let url = 'http://localhost:3000/play/multi-player-lobby'
             let userUrl = 'http://localhost:5000/user/';
+            console.log("Hello!");
+            console.log(url);
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -27,13 +50,16 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
+                console.log("This is my response: " + response);
                 if (response?.data?.isLoggedIn) {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
                     document.getElementById('user-route').style.visibility = "visible";
                     document.getElementById('logout').style.visibility = "visible";
                     document.getElementById('play').style.visibility = "visible";
+                    // document.getElementById('user-login').innerText += " " + response?.data?.user.login
                     document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
+                    document.getElementsByClassName('main-player')[0].children[0].textContent = response?.data?.user.login.toUpperCase();
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";

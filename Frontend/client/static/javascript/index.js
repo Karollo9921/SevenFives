@@ -5,6 +5,7 @@ import User from './views/UserPage/User.js';
 import NotFound from './views/404/NotFound.js';
 import SelectGame from './views/GamePage/SelectGame.js';
 import SinglePlayer from './views/GamePage/SinglePlayer/SinglePlayer.js';
+import MultiPlayerLobby from './views/GamePage/MultiPlayer/lobby.js';
 
 
 
@@ -33,6 +34,7 @@ const router = async () => {
         { path: "/user/:id", view: User },
         { path: "/play", view: SelectGame },
         { path: "/play/single-player", view: SinglePlayer },
+        { path: "/play/multi-player-lobby", view: MultiPlayerLobby },
     ];
 
     // choose our route
