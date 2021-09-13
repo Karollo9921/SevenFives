@@ -38,11 +38,24 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
+        const socket = io('http://localhost:3000/play/multi-player-lobby');
+
+        console.log(socket.io);
+
+        socket.on("connect", () => {
+            console.log(socket.connected);
+        });
+
+        socket.on('messageFromServer', (dataFromServer) => {
+            console.log(dataFromServer);
+            socket.emit('dataToServer', { data: "Data from the Client!" })
+        });
+
+
+
         dataFromServer = async () => {
             let url = 'http://localhost:3000/play/multi-player-lobby'
             let userUrl = 'http://localhost:5000/user/';
-            console.log("Hello!");
-            console.log(url);
             await axios.get(url, {
                 headers: {
                   'Content-Type': 'application/json'
@@ -50,16 +63,11 @@ export default class extends AbstractView {
                 withCredentials: true
               })
             .then(response => {
-                console.log("This is my response: " + response);
                 if (response?.data?.isLoggedIn) {
                     document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
                     document.getElementById('user-route').style.visibility = "visible";
                     document.getElementById('logout').style.visibility = "visible";
-                    document.getElementById('play').style.visibility = "visible";
-                    // document.getElementById('user-login').innerText += " " + response?.data?.user.login
-                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
-                    document.getElementsByClassName('main-player')[0].children[0].textContent = response?.data?.user.login.toUpperCase();
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
