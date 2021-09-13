@@ -17,30 +17,27 @@ import SessionData from './interfaces/userSession';
 const app = new App({
     port: 3000,
     middlewares: [
-        cors(
-            { 
-                origin: "http://localhost:5000",
-                methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
-                credentials: true 
-            }
-        ),
+        cors({ 
+            origin: "http://localhost:5000",
+            methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
+            credentials: true 
+        }),
         cookieParser(),
-        session(
-            { 
-                secret: 'my secret', 
-                resave: true,
-                saveUninitialized: false,
-                store: store,
-            }),
+        session({ 
+            secret: 'my secret', 
+            resave: true,
+            saveUninitialized: false,
+            store: store,
+        }),
         express.json({ type: "application/json" }),
         express.urlencoded({ extended: true }),
     ],
     routes: [
-        new HomeRoute('/'),
-        new AuthRoute('/'),
-        new UserRoute('/'),
-        new PlayRoute('/'),
-        new SinglePlayer('/'),
+        new HomeRoute(),
+        new AuthRoute(),
+        new UserRoute(),
+        new PlayRoute(),
+        new SinglePlayer(),
     ]
 });
 

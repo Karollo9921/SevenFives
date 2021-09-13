@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/db';
 
 
-
 class App {
     public port: number;
     public app: Application;
@@ -34,7 +33,7 @@ class App {
 
     private useRoutes(routes: RouteModel[]) {
         routes.forEach((route: RouteModel) => {
-            this.app.use(route.path, this.allowCrossDomain, route.router);
+            this.app.use('/', this.allowCrossDomain, route.router);
         });
     };
 
