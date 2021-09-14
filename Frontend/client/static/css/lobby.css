@@ -31,10 +31,28 @@
 }
 
 
-.logged-in-players {
+.players-header {
     grid-column-start: 7;
     grid-column-end: 9; 
     grid-row-start: 1;
+    grid-row-end: 2;
+    background-color: white;
+    text-align: center;
+    vertical-align: center;
+}
+
+
+.players-header h3 {
+    text-align: center;
+    vertical-align: center; 
+    margin-top: 5px;   
+}
+
+
+.logged-in-players {
+    grid-column-start: 7;
+    grid-column-end: 9; 
+    grid-row-start: 2;
     grid-row-end: 12;
     background-color: white;
     overflow: hidden;
@@ -73,7 +91,21 @@
     width: 100%;
     height: 100%;
     text-align: center;
+    display: flex;
+    justify-content: space-between;
 }
+
+
+.create-game form label {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: lawngreen;
+}
+
+.create-game form select {
+    margin-right: 5px;
+}
+
 
 #create-btn {
     width: 50%;

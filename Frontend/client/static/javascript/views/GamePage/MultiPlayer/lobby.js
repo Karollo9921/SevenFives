@@ -12,15 +12,21 @@ export default class extends AbstractView {
             <div class="chat">
                 <p><span class="nickname">Karollo</span><span class="message">: Hello !</span></p>
             </div>
+            <div class="players-header"><h3>Active Players:</h3></div>
             <div class="logged-in-players">
-                <ul>
-                    <li><div class="green"></div> <p>Karollo</p> </li>
-                    <li><div class="green"></div> <p>Karollo 2</p></li>
+                <ul id="ul-players">
                 </ul>
             </div>
             <div class="create-game">
                 <form id="create" action="http://localhost:3000/play/:id" method="post">
                     <button id="create-btn" type="submit">Create a Game</button>
+                    <label for="numOfPlayers">Number of Players:</label>
+                    <select name="numOfPlayers" id="numOfPlayers">
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
                 </form>
             </div>
             <div class="input-message">
@@ -40,14 +46,27 @@ export default class extends AbstractView {
         return `
         const socket = io('http://localhost:3000/play/multi-player-lobby');
 
-        console.log(socket.io);
-
         socket.on("connect", () => {
             console.log(socket.connected);
         });
 
         socket.on('messageFromServer', (dataFromServer) => {
-            console.log(dataFromServer);
+            var login = dataFromServer.data;
+            var liNode = document.createElement("li");
+            var divNode = document.createElement("div");
+            var pNode = document.createElement("p");
+            var textnode = document.createTextNode(login);
+
+            pNode.appendChild(textnode);
+
+            divNode.classList.add("green");
+            pNode.classList.add(login);
+
+            liNode.appendChild(divNode);
+            liNode.appendChild(pNode);
+
+            document.getElementById("ul-players").appendChild(liNode);
+
             socket.emit('dataToServer', { data: "Data from the Client!" })
         });
 
@@ -68,6 +87,7 @@ export default class extends AbstractView {
                     document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
                     document.getElementById('user-route').style.visibility = "visible";
                     document.getElementById('logout').style.visibility = "visible";
+                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
                 } else {
                     document.getElementsByClassName('login-register')[0].style.visibility = "visible";
                     document.getElementsByClassName('login-register')[1].style.visibility = "visible";
