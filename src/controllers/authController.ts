@@ -26,8 +26,6 @@ class AuthController {
         let uidMax: number[] = [];
         (await User.find({}, {uid: 1, _id: 0} ).sort({uid:-1}).limit(1)).forEach((u) => uidMax.push(+u.uid + 1));
         let uid = uidMax[0] || 1;
-        console.log(req.body);
-        // console.log(uid);
 
         //req.body
         let { login, password, password2 } = req.body;

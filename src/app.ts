@@ -3,6 +3,8 @@ import RouteModel from './routes/routeModel/routeModel';
 import { Application } from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db';
+import * as socketio from 'socket.io';
+import Lobby from './models/lobby';
 
 
 class App {
@@ -17,6 +19,7 @@ class App {
         this.app.enable('trust proxy');
         this.useMiddlewares(appSetup.middlewares);
         this.useRoutes(appSetup.routes);
+        this.createLobby();
     };
 
     public listen() {
@@ -35,6 +38,19 @@ class App {
         routes.forEach((route: RouteModel) => {
             this.app.use('/', this.allowCrossDomain, route.router);
         });
+    };
+
+    private async createLobby() {
+        let isLobbyExists = await Lobby.findOne({});
+        if (!isLobbyExists) {
+            const newLobby = new Lobby({
+                chat: [],
+                activePlayers: [],
+                createdGames: []
+            });
+
+            newLobby.save();
+        }
     };
 
     public allowCrossDomain(req: Request, res: Response, next: NextFunction) {
