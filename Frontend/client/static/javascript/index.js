@@ -8,7 +8,6 @@ import SinglePlayer from './views/GamePage/SinglePlayer/SinglePlayer.js';
 import MultiPlayerLobby from './views/GamePage/MultiPlayer/lobby.js';
 
 
-
 const letsRegexOurPath = (path) => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
 const getParams = (match) => {
@@ -56,7 +55,6 @@ const router = async () => {
     const view = new ourRoute.route.view(getParams(ourRoute));
     document.querySelector('#app').innerHTML = await view.getHtml();
 
-    //Adding a script tag
     const scriptModule = document.createElement('script');
     if (ourRoute.route.path === '/play/single-player') {
         scriptModule.setAttribute('type', 'module');
@@ -65,7 +63,7 @@ const router = async () => {
     }
 
     const script = document.createElement('script');
-    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('type', 'module');
     script.text = await view.addScript();
     script.setAttribute('defer', 'defer');
     document.body.appendChild(script);

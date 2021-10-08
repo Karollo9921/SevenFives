@@ -32,65 +32,10 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
-        dataFromServer = async () => {
-            console.log("Hello!")
-            let url = 'http://localhost:3000/login';
-            await axios.get(url, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                console.log(document.getElementsByClassName('login-register'));
-                if (response?.data?.isLoggedIn) {
-                    window.location.href = response.data.url;
-                    document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
-                    document.getElementById('logout').style.visibility = "visible";
-                    document.getElementById('play').style.visibility = "visible";
-                } else {
-                    document.getElementsByClassName('login-register')[0].style.visibility = "visible";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "visible";
-                    document.getElementById('logout').style.visibility = "hidden";    
-                    document.getElementById('play').style.visibility = "hidden";               
-                }
-            })
-            .catch(err => {
-                document.getElementById('home-data').innerHTML = err
-            });
-        };
-        
-        dataFromServer();
+        import { dataFromServer } from '/static/javascript/utilities/getData.js';
+        import { login } from '/static/javascript/utilities/postData.js';
 
-
-        const loginBtn = document.getElementById('post-btn');
-        const loginInput = document.getElementById('login');
-        const passwordInput = document.getElementById('password');
-
-
-        login = async (clickEvent) => {
-            clickEvent.preventDefault();
-            let url = 'http://localhost:3000/login';
-            await axios.post(url, { login: loginInput.value, password: passwordInput.value }, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                if (response.data.success) {
-                    window.location.href = response.data.url;
-                    // console.log(response.data.session);
-                } else {
-                    document.getElementById('message').innerHTML = response.data.message
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').innerHTML = err
-            });
-        };
-
+        dataFromServer(window.location.pathname);
         document.getElementById('post-btn').addEventListener('click', login);
         `
     }

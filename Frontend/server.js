@@ -18,7 +18,8 @@ app.use(session({
       }
 }));
 
-app.get('/*', (req, res) => {
+app.get('*', (req, res) => {
+    console.log(path.resolve(__dirname, "client", "static"));
     res.sendFile(path.resolve(__dirname, "client", "index.html"))
 });
 

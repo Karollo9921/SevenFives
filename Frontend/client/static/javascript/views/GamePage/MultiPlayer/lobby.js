@@ -44,96 +44,13 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
-        const socket = io('http://localhost:3000/play/multi-player-lobby');
+        import { lobbySocket } from '/static/javascript/sockets/lobbySocket.js';
+        import { dataFromServer } from '/static/javascript/utilities/getData.js';
+        import { logout } from '/static/javascript/utilities/logout.js';
 
-        socket.on("connect", () => {
-            console.log(socket.connected);
-        });
-
-        socket.on('messageFromServer', (dataFromServer) => {
-            var login = dataFromServer.data;
-            var liNode = document.createElement("li");
-            var divNode = document.createElement("div");
-            var pNode = document.createElement("p");
-            var textnode = document.createTextNode(login);
-
-            pNode.appendChild(textnode);
-
-            divNode.classList.add("green");
-            pNode.classList.add(login);
-
-            liNode.appendChild(divNode);
-            liNode.appendChild(pNode);
-
-            document.getElementById("ul-players").appendChild(liNode);
-
-            socket.emit('dataToServer', { data: "Data from the Client!" })
-        });
-
-
-
-        dataFromServer = async () => {
-            let url = 'http://localhost:3000/play/multi-player-lobby'
-            let userUrl = 'http://localhost:5000/user/';
-            await axios.get(url, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                if (response?.data?.isLoggedIn) {
-                    document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
-                    document.getElementById('user-route').style.visibility = "visible";
-                    document.getElementById('logout').style.visibility = "visible";
-                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
-                } else {
-                    document.getElementsByClassName('login-register')[0].style.visibility = "visible";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "visible";
-                    document.getElementById('play').style.visibility = "hidden";
-                    document.getElementById('user-route').style.visibility = "hidden";
-                    document.getElementById('logout').style.visibility = "hidden";                   
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                console.log(err.toString().substr(err.toString().length - 3) == 404)
-                if ((err.toString().substr(err.toString().length - 3) == 404)) {
-                    window.location.href = "http://localhost:5000/404";
-                    console.log("Am I here?")
-                } else {
-                    return console.log("This is my error: " + err)
-                }
-            });
-        };
-        
-        dataFromServer();
-
-        const logoutBtn = document.getElementById('logout-btn');
-
-        logout = async (clickEvent) => {
-            clickEvent.preventDefault();
-            let url = 'http://localhost:3000/logout';
-            await axios.post(url, { }, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                if (response.data.success) {
-                    window.location.href = response.data.url;
-                } else {
-                    document.getElementById('message').innerHTML = response.data.message
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').innerHTML = err
-            });
-        };
-
-        logoutBtn.addEventListener('click', logout);
+        lobbySocket();
+        dataFromServer(window.location.pathname);
+        document.getElementById('logout-btn').addEventListener('click', logout);
         `
     }
 }

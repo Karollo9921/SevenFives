@@ -36,76 +36,10 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
-        dataFromServer = async () => {
-            console.log("Hello!")
-            let url = 'http://localhost:3000/register';
-            await axios.get(url, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                console.log(document.getElementsByClassName('login-register'));
-                if (response?.data?.isLoggedIn) {
-                    window.location.href = response.data.url;
-                    document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
-                    document.getElementById('logout').style.visibility = "visible";
-                    document.getElementById('play').style.visibility = "visible";
-                } else {
-                    document.getElementsByClassName('login-register')[0].style.visibility = "visible";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "visible";
-                    document.getElementById('logout').style.visibility = "hidden"; 
-                    document.getElementById('play').style.visibility = "hidden";                  
-                }
-            })
-            .catch(err => {
-                document.getElementById('home-data').innerHTML = err
-            });
-        };
-        
-        dataFromServer();
+        import { dataFromServer } from '/static/javascript/utilities/getData.js';
+        import { register } from '/static/javascript/utilities/postData.js';
 
-
-        const registerBtn = document.getElementById('post-btn');
-        const loginInput = document.getElementById('login');
-        const passwordInput = document.getElementById('password');
-        const password2Input = document.getElementById('password2');
-            
-        register = async (clickEvent) => {
-            clickEvent.preventDefault();
-            let url = 'http://localhost:3000/register';
-            let data = JSON.stringify(
-                {
-                    login: loginInput.value,
-                    password: passwordInput.value,
-                    password2: password2Input.value
-                }
-            );
-            const postData = await fetch(url, {
-                method: 'POST',
-                // credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                redirect: 'manual',
-                body: data
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = data.url;
-                } else {
-                    document.getElementById('message').innerHTML = data.message
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').innerHTML = err
-            });
-            return postData().json();
-        };
-        
+        dataFromServer(window.location.pathname);        
         document.getElementById('post-btn').addEventListener('click', register);
         `
     }

@@ -34,7 +34,7 @@ class UserController {
                     uid: user.uid,
                     login: user.login,
                     isLoggedIn: req.session.isLoggedIn,
-                    loggedUser: req.session.user
+                    user: req.session.user
                 });
             })
             .catch((err) => {

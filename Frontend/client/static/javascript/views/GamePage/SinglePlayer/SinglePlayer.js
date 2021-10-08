@@ -12,7 +12,6 @@ export default class extends AbstractView {
             <div class="player1 player">
                 <p class="nickname"></p>
                 <div class="num-of-dices">Number of Dices: 1</div>
-
             </div>
             <div class="player2 player">
                 <p class="nickname"></p>
@@ -88,74 +87,11 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
-        dataFromServer = async () => {
-            let url = 'http://localhost:3000/play/single-player'
-            let userUrl = 'http://localhost:5000/user/';
-            console.log("Hello!");
-            console.log(url);
-            await axios.get(url, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                console.log("This is my response: " + response);
-                if (response?.data?.isLoggedIn) {
-                    document.getElementsByClassName('login-register')[0].style.visibility = "hidden";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "hidden";
-                    document.getElementById('user-route').style.visibility = "visible";
-                    document.getElementById('logout').style.visibility = "visible";
-                    document.getElementById('play').style.visibility = "visible";
-                    // document.getElementById('user-login').innerText += " " + response?.data?.user.login
-                    document.getElementById('user-route').setAttribute("href", userUrl + response?.data?.user?.uid);
-                    document.getElementsByClassName('main-player')[0].children[0].textContent = response?.data?.user.login.toUpperCase();
-                } else {
-                    document.getElementsByClassName('login-register')[0].style.visibility = "visible";
-                    document.getElementsByClassName('login-register')[1].style.visibility = "visible";
-                    document.getElementById('play').style.visibility = "hidden";
-                    document.getElementById('user-route').style.visibility = "hidden";
-                    document.getElementById('logout').style.visibility = "hidden";                   
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                console.log(err.toString().substr(err.toString().length - 3) == 404)
-                if ((err.toString().substr(err.toString().length - 3) == 404)) {
-                    window.location.href = "http://localhost:5000/404";
-                    console.log("Am I here?")
-                } else {
-                    return console.log("This is my error: " + err)
-                }
-            });
-        };
-        
-        dataFromServer();
+        import { dataFromServer } from '/static/javascript/utilities/getData.js';
+        import { logout } from '/static/javascript/utilities/logout.js';
 
-        const logoutBtn = document.getElementById('logout-btn');
-
-        logout = async (clickEvent) => {
-            clickEvent.preventDefault();
-            let url = 'http://localhost:3000/logout';
-            await axios.post(url, { }, {
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                withCredentials: true
-              })
-            .then(response => {
-                if (response.data.success) {
-                    window.location.href = response.data.url;
-                } else {
-                    document.getElementById('message').innerHTML = response.data.message
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').innerHTML = err
-            });
-        };
-
-        logoutBtn.addEventListener('click', logout);
+        dataFromServer(window.location.pathname);
+        document.getElementById('logout-btn').addEventListener('click', logout);
         `
     }
 }
