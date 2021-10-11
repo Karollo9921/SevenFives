@@ -27,7 +27,7 @@ export class Game {
     };
 
     singleTurn(Player) {
-
+        console.log(this.players);
         this.turn += 1;
         this.Statement.setNewStatement(`Now it's ${Player.nickname}'s turn!`);
 
@@ -50,19 +50,22 @@ export class Game {
                         this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(this.playerTurn) + 1) % (this.playersInGame().length)];
                         this.currentBid = convertBidToArray(e.target.parentElement.children[0].textContent, e.target.textContent);
                         this.BidTable.table.style.visibility = 'hidden';
-                        this.singleTurn(this.playerTurn);
                         e.stopImmediatePropagation();
+                        console.log(e);
+                        this.singleTurn(this.playerTurn);
                     } else {
                         this.Statement.setNewStatement(`You must Call Him A Liar or Up The Bid !`);
-                        this.singleTurn(this.playerTurn);
                         e.stopImmediatePropagation();
+                        this.singleTurn(this.playerTurn);
                     }
                 });
             });
             
             // call previous player a Liar
             this.btnCallHimLiar.addEventListener('click', (e) => {
+                console.log(this.currentBid);
                 let dicesfromBidTemp = this.allDicesInTurn().filter((el) => (el) === this.currentBid[0])
+                console.log(dicesfromBidTemp);
                 
                 // previous player is not a Liar
                 if (dicesfromBidTemp.length >= this.currentBid.length) {
@@ -103,7 +106,6 @@ export class Game {
                         document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[0].style.color = "Red"
                         document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[1].textContent = "Out of the Game"
                     } else {
-                        console.log(document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[1]);
                         document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[1].textContent = `Number of Dices: ${this.playerPreviousTurn.numOfDices}`
                         this.playerTurn = this.playerPreviousTurn;
                     }
@@ -130,6 +132,7 @@ export class Game {
                     this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(Player) + 1) % (this.playersInGame().length)];
                     this.currentBid = convertBidToArray(singularPartOfBid, pluralPartOfBid);
                     this.BidTable.table.style.visibility = 'hidden';
+                    e.stopImmediatePropagation();
                     this.singleTurn(this.playerTurn);
                 });
             });
@@ -138,20 +141,42 @@ export class Game {
         // bot's move, first turn, he can only put his Bid
         if (Player.isBot & this.turn === 1) {
             setTimeout(() => {
-                this.Backlog.setNewLog(this.playerTurn.nickname + ": " + SINGULAR[0] + ' ' + PLURAL[this.playerTurn.dices[0] - 1] + " !")
-                this.currentBid = convertBidToArray(SINGULAR[0], PLURAL[this.playerTurn.dices[0] - 1]);
+                if (Math.random()*100 > 33) {
+                    let bestType = this.bestTruthType(Player.dices);
+                    let extraDiceToBid = Math.max(Math.floor((this.numOfAllDices - bestType[1]) / 4) - 1, 0);
+                    this.Backlog.setNewLog(Player.nickname + ": " + SINGULAR[bestType[1] - 1 + extraDiceToBid] + ' ' + PLURAL[bestType[0][bestType[0].length - 1] - 1] + " !");
+                    this.currentBid = convertBidToArray(SINGULAR[bestType[1] - 1 + extraDiceToBid], PLURAL[bestType[0][bestType[0].length - 1] - 1]);
+                } else {
+                    let randomDice = Math.ceil(Math.random()*6);
+                    this.Backlog.setNewLog(Player.nickname + ": " + SINGULAR[Math.max(Math.floor(this.numOfAllDices / 4) - 1, 0)] + ' ' + PLURAL[randomDice - 1] + " !");
+                    this.currentBid = convertBidToArray(SINGULAR[Math.max(Math.floor(this.numOfAllDices / 4) - 1, 0)], PLURAL[randomDice - 1]);
+                }
                 this.playerPreviousTurn = this.playerTurn;
                 this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(this.playerTurn) + 1) % (this.playersInGame().length)];
                 this.singleTurn(this.playerTurn);
-            }, 1000)
+            }, 2500)
         }
 
         // bot's move, turn > 1, he can put his Bid or Call previous Player a Liar
         if (Player.isBot & this.turn > 1) {
             setTimeout(() => {
+                
+                // bot's dices in his hand from latest bid
+                let dicesfromBidOnPlayerHand = Player.dices.filter((el) => (el) === this.currentBid[0]);
+                let bestType = this.bestTruthType(Player.dices);
+                let bestTypeArr = convertBidToArray(SINGULAR[bestType[1] - 1], PLURAL[bestType[0][bestType[0].length - 1] - 1]);
+                let powerOfLastBid = indexOf(bidHierarchy, this.currentBid, arraysIdentical);
 
-                // if Math.random()*10 > 5 then bot will call previous player a Liar
-                if (Math.random()*10 > 5) {
+                // conditions when bot will call a Liar
+                if (
+                    dicesfromBidOnPlayerHand.length < this.currentBid.length 
+                        &&
+                    (1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.67
+                        &&
+                    (powerOfLastBid > indexOf(bidHierarchy, bestTypeArr, arraysIdentical))
+                        &&
+                    this.currentBid.length > 1
+                ) {
 
                     let dicesfromBidTemp = this.allDicesInTurn().filter((el) => (el) === this.currentBid[0])
                     this.Backlog.setNewLog(Player.nickname + " calls " + this.playerPreviousTurn.nickname + " a Liar !");
@@ -208,16 +233,42 @@ export class Game {
                     this.handleButtonsVisibility("none", "none", "block", "hidden");
                     this.btnOK.addEventListener('click', (e) => this.letsEndTheRound(e));
 
-                // if Math.random()*10 < 5 then bot Bid up the Stake
+                // if the condition has not been met:
                 } else {
-                    let newBid = bidHierarchy[indexOf(bidHierarchy, this.currentBid, arraysIdentical) + 2];
-                    this.Backlog.setNewLog(this.playerTurn.nickname + ": " + SINGULAR[newBid.length - 1] + ' ' + PLURAL[newBid[0] - 1] + " !")
+                    let newBid;
+                    if (
+                        (dicesfromBidOnPlayerHand.length == this.currentBid.length 
+                            &&
+                        (1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) > 0.65)
+                            ||
+                        (dicesfromBidOnPlayerHand.length > this.currentBid.length)
+                    ) {
+                        this.currentBid.push(this.currentBid[0]);
+                        newBid = this.currentBid;
+                    } else {
+
+                        if (Math.random()*10 < 3) {
+                            console.log(bidHierarchy[indexOf(bidHierarchy, this.currentBid, arraysIdentical)]);
+                            newBid = bidHierarchy[indexOf(bidHierarchy, this.currentBid, arraysIdentical) + Math.ceil(Math.random()*6)]
+                            console.log(newBid);
+                        } else {
+                            
+                            newBid = bestTypeArr
+                            while (indexOf(bidHierarchy, bestTypeArr, arraysIdentical) <= powerOfLastBid) {
+                                bestTypeArr.push(bestTypeArr[0]);
+                                newBid = bestTypeArr;
+                            }
+                        }
+                    }
+
+                    // bidHierarchy[indexOf(bidHierarchy, this.currentBid, arraysIdentical) + 2];
+                    this.Backlog.setNewLog(Player.nickname + ": " + SINGULAR[newBid.length - 1] + ' ' + PLURAL[newBid[0] - 1] + " !")
                     this.playerPreviousTurn = this.playerTurn;
                     this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(this.playerTurn) + 1) % this.playersInGame().length];
                     this.currentBid = newBid;
                     this.singleTurn(this.playerTurn);
                 }
-            }, 1000)
+            }, 2500)
         }
     };
 
@@ -259,9 +310,14 @@ export class Game {
             this.btnRollTheDice.style.display = "none";
         } else {
             this.Statement.setNewStatement("ROLL THE DICE ! ^");
+            e.stopImmediatePropagation();
             this.btnRollTheDice.addEventListener('click', (e) => this.rollTheDice(e));
         }
 
+        e.stopImmediatePropagation();
+        e.stopImmediatePropagation();
+        e.stopImmediatePropagation();
+        e.stopImmediatePropagation();
         e.stopImmediatePropagation();
     };
 
@@ -323,6 +379,24 @@ export class Game {
         this.btnOK.style.display = ok;
         this.BidTable.table.style.visibility = bidTable;
     };
+
+    bestTruthType(playersDices) {
+        let count = 0;
+        let summaryObject = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+        for (let key of Object.keys(summaryObject)) {
+          for (let dice of playersDices) {
+            if (dice == key) { count++ }
+          }
+          summaryObject[key] = count;
+          count = 0
+        }
+
+        return [
+          Object.keys(summaryObject).filter(key => summaryObject[key] === Math.max(...Object.values(summaryObject))),
+          Math.max(...Object.values(summaryObject))
+        ]
+    }
 
 };
 
