@@ -24,7 +24,7 @@ const connectDB = async () => {
         
         // db = Mongoose.connection;
         
-    } catch (err) {
+    } catch (err: any) {
         console.error(`Error: ${err.message}`);
         process.exit(1);
     }
