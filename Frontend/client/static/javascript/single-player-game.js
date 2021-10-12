@@ -1,3 +1,6 @@
+//import url
+import url from '../../../../src/config/url';
+
 // let's import modules
 import { Player } from './SinglePlayerGameComponents/Player.js';
 import { BidTable } from './SinglePlayerGameComponents/BidTable.js';
@@ -20,7 +23,7 @@ const fetchData = (url) => {
 
 // let's initialize the game
 const initializeTheGame = async () => {
-    const login = await fetchData('http://localhost:3000/play/single-player');
+    const login = await fetchData(url.urlForFrontend + '/play/single-player');
     const game = new Game({
         btnRollTheDice: document.getElementById('roll'),
         btnCallHimLiar: document.getElementById('call'),

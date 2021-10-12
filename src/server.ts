@@ -12,13 +12,14 @@ import * as http from 'http';
 import cors from 'cors';
 import session from 'express-session';
 import { store } from './config/db';
+import url from './config/url';
 import SessionData from './interfaces/userSession';
 
 
 import * as socketio from 'socket.io';
 const io: socketio.Server = new socketio.Server({
     cors: {
-        origin: "http://localhost:5000"
+        origin: url.url
     }
 });
 
@@ -27,7 +28,7 @@ const app = new App({
     port: 3000,
     middlewares: [
         cors({ 
-            origin: "http://localhost:5000",
+            origin: url.url,
             methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
             credentials: true 
         }),

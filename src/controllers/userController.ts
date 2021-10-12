@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
+import url from '../config/url';
 
 
 class UserController {
@@ -13,7 +14,7 @@ class UserController {
         // checking if User is logged in
         if (!req.session.isLoggedIn) {
             return res.json({
-                url: "http://localhost:5000/"
+                url: url.url + "/"
             });
         };
 
@@ -25,7 +26,7 @@ class UserController {
                     return res.status(404).json({
                         succes: false,
                         isLoggedIn: req.session.isLoggedIn,
-                        url: "http://localhost:5000/404"
+                        url: url.url + "/404"
                     });
                 }
 

@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
 import bcrypt from 'bcrypt';
-
-
+import url from '../config/url';
 
 
 class AuthController {
@@ -16,7 +15,7 @@ class AuthController {
         return res.json({
             isLoggedIn: req.session.isLoggedIn,
             user: req.session.user,
-            url: "http://localhost:5000/"
+            url: url.url
         });
     };
 
@@ -35,7 +34,7 @@ class AuthController {
             return res.status(400).json({
                 success: false,
                 message: "Password do not match",
-                url: "http://localhost:5000/register"
+                url: url.url + "/register"
             });
         }
     
@@ -55,18 +54,18 @@ class AuthController {
                     return res.status(201).json({
                         success: true,
                         message: "User has been created",
-                        url: "http://localhost:5000/login"
+                        url: url.url + "/login"
                         }).end();
                 }).catch((err) => res.json({
                     success: false,
                     message: `Catch-Save error: ${err}`,
-                    url: "http://localhost:5000/register"
+                    url: url.url + "/register"
                 }));
             } else {
                 return res.status(400).json({
                     success: false,
                     message: "That User already exists",
-                    url: "http://localhost:5000/register"
+                    url: url.url + "/register"
                 }); 
             }
         })
@@ -80,7 +79,7 @@ class AuthController {
         return res.json({
             isLoggedIn: req.session.isLoggedIn,
             user: req.session.user,
-            url: "http://localhost:5000/"
+            url: url.url + "/"
         });        
     }
 
@@ -106,14 +105,14 @@ class AuthController {
                             return res.status(201).json({
                                 success: true,
                                 message: "You are logged in !",
-                                url: "http://localhost:5000",
+                                url: url.url + "/",
                                 session: req.session
                             });
                         } else {
                             return res.status(401).json({
                                 success: false,
                                 message: "Password do not match",
-                                url: "http://localhost:5000/login"
+                                url: url.url + "/login"
                             })
                         }
                     })
@@ -122,7 +121,7 @@ class AuthController {
                         return res.status(400).json({
                             succes: false,
                             message: `Error: ${err}`,
-                            url: "http://localhost:5000/login"
+                            url: url.url + "/login"
                         })
                     })
             }
@@ -145,7 +144,7 @@ class AuthController {
             }
             res.status(200).json({
                 success: true,
-                url: "http://localhost:5000"
+                url: url.url + "/"
             })
         })
     };

@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/db';
 import * as socketio from 'socket.io';
 import Lobby from './models/lobby';
+import path from 'path';
+import url from './config/url';
 
 
 class App {
@@ -14,12 +16,16 @@ class App {
     constructor(appSetup: { port: number; middlewares: any, routes: RouteModel[] }) {
         this.app = express();
         this.port = +process.env.PORT! || appSetup.port;
+
         dotenv.config();
         connectDB();
+
         this.app.enable('trust proxy');
+
         this.useMiddlewares(appSetup.middlewares);
         this.useRoutes(appSetup.routes);
         this.createLobby();
+        this.buildFrontendOnProd();
     };
 
     public listen() {
@@ -54,11 +60,22 @@ class App {
     };
 
     public allowCrossDomain(req: Request, res: Response, next: NextFunction) {
-        res.header("Access-Control-Allow-Origin", "http://localhost:5000");
+        res.header("Access-Control-Allow-Origin", url.url);
         res.header('Access-Control-Allow-Credentials', 'true');
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
         next();
       }
+
+      buildFrontendOnProd() {
+        if (process.env.NODE_ENV === 'production') {
+            this.app.use(express.static(path.join(__dirname, '/Frontend/build')));
+    
+            this.app.get('/*', (req, res) =>
+              res.sendFile(path.resolve(__dirname, 'Frontend', 'build', 'index.html'))
+            );
+          } 
+    };
+    
 
     
 };

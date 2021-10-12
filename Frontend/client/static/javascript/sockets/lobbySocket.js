@@ -1,5 +1,7 @@
+import url from '../../../../../src/config/url';
+
 const lobbySocket = () => {
-  const socket = io('http://localhost:3000/play/multi-player-lobby');
+  const socket = io(url.urlForFrontend + '/play/multi-player-lobby');
 
   socket.on('connect', () => {
       console.log(socket);
