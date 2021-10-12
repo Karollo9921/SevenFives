@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "start": "ts-node dist/server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node dist/src/server",
+    "postinstall": "tsc",
+    "watch-node": "nodemon dist/src/server.js",
+    "watch-ts": "tsc -w",
+    "deploy": "git add . && git commit -m Heroku && git push heroku"
   },
+  "engines": { "node": "v14.17.0" },
   "author": "Karol Kluba",
   "license": "ISC",
   "devDependencies": {
