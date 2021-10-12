@@ -79,7 +79,7 @@ class AuthController {
         return res.json({
             isLoggedIn: req.session.isLoggedIn,
             user: req.session.user,
-            url: url.url + "/"
+            url: url.url
         });        
     }
 
@@ -105,7 +105,7 @@ class AuthController {
                             return res.status(201).json({
                                 success: true,
                                 message: "You are logged in !",
-                                url: url.url + "/",
+                                url: url.url,
                                 session: req.session
                             });
                         } else {
@@ -144,7 +144,7 @@ class AuthController {
             }
             res.status(200).json({
                 success: true,
-                url: url.url + "/"
+                url: url.url
             })
         })
     };

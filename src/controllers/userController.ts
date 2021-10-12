@@ -14,7 +14,7 @@ class UserController {
         // checking if User is logged in
         if (!req.session.isLoggedIn) {
             return res.json({
-                url: url.url + "/"
+                url: url.url
             });
         };
 
