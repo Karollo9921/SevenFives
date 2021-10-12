@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 import session from 'express-session';
 import { default as connectMongoDBSession } from 'connect-mongodb-session';
-import mongoUri from './secret';
+import dotenv from 'dotenv';
 
 
-
+dotenv.config();
 const MongoDBStore = connectMongoDBSession(session);
 const store = new MongoDBStore({
-  uri: mongoUri.mongoUri,
+  uri: process.env.MONGO_URI!,
   collection: 'sessions'
 });
 
