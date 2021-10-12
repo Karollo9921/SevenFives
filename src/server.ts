@@ -12,7 +12,6 @@ import * as http from 'http';
 import cors from 'cors';
 import session from 'express-session';
 import { store } from './config/db';
-import cookieParser from 'cookie-parser';
 import SessionData from './interfaces/userSession';
 
 
@@ -32,7 +31,6 @@ const app = new App({
             methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
             credentials: true 
         }),
-        cookieParser(),
         session({ 
             secret: 'my secret', 
             resave: true,
