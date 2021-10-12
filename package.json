@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node dist/server",
-    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Karol Kluba",
