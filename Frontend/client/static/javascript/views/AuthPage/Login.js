@@ -32,10 +32,11 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
+        import { returnOrigin } from '/static/javascript/utilities/url.js';
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
         import { login } from '/static/javascript/utilities/postData.js';
 
-        dataFromServer(window.location.pathname);
+        dataFromServer(window.location.pathname, returnOrigin);
         document.getElementById('post-btn').addEventListener('click', login);
         `
     }

@@ -1,10 +1,21 @@
+const returnOrigin = (isBackend) => {
+    let url;
+    if (window.location.origin === 'https://seven-fives.herokuapp.com' || !isBackend ) 
+    { 
+      url = window.location.origin;
+    } else {
+      url = 'http://localhost:3000';
+    }
+    return url;
+  }
+
 const login = async (clickEvent) => {
   clickEvent.preventDefault();
 
   var loginInput = document.getElementById('login');
   var passwordInput = document.getElementById('password');
 
-  let url = 'http://localhost:3000/login';
+  let url = returnOrigin(true) + '/login';
 
   await axios.post(url, { login: loginInput.value, password: passwordInput.value }, {
       headers: {
@@ -32,7 +43,7 @@ const register = async (clickEvent) => {
   var passwordInput = document.getElementById('password');
   var password2Input = document.getElementById('password2');
 
-  let url = 'http://localhost:3000/register';
+  let url = returnOrigin(true) + '/register';
 
   let data = JSON.stringify(
       {

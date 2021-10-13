@@ -1,5 +1,5 @@
 //import url
-import url from '../../../../src/config/url';
+import { returnOrigin } from './utilities/url.js';
 
 // let's import modules
 import { Player } from './SinglePlayerGameComponents/Player.js';
@@ -23,7 +23,7 @@ const fetchData = (url) => {
 
 // let's initialize the game
 const initializeTheGame = async () => {
-    const login = await fetchData(url.urlForFrontend + '/play/single-player');
+    const login = await fetchData(returnOrigin(true) + '/play/single-player');
     const game = new Game({
         btnRollTheDice: document.getElementById('roll'),
         btnCallHimLiar: document.getElementById('call'),

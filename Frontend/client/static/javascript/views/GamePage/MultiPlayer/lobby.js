@@ -18,7 +18,7 @@ export default class extends AbstractView {
                 </ul>
             </div>
             <div class="create-game">
-                <form id="create" action="http://localhost:3000/play/:id" method="post">
+                <form id="create" method="post">
                     <button id="create-btn" type="submit">Create a Game</button>
                     <label for="numOfPlayers">Number of Players:</label>
                     <select name="numOfPlayers" id="numOfPlayers">
@@ -44,12 +44,13 @@ export default class extends AbstractView {
 
     async addScript() {
         return `
+        import { returnOrigin } from '/static/javascript/utilities/url.js';
         import { lobbySocket } from '/static/javascript/sockets/lobbySocket.js';
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
         import { logout } from '/static/javascript/utilities/logout.js';
 
         lobbySocket();
-        dataFromServer(window.location.pathname);
+        dataFromServer(window.location.pathname, returnOrigin);
         document.getElementById('logout-btn').addEventListener('click', logout);
         `
     }
