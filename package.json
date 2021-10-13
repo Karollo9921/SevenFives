@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "start": "ts-node ./src/server.ts",
-    "heroku-postbuild": "cd Frontend && npm install && npm start",
+    "heroku-postbuild": "cd Frontend && npm install && npm build",
     "postinstall": "tsc",
     "watch-node": "nodemon dist/src/server.js",
     "watch-ts": "tsc -w",
