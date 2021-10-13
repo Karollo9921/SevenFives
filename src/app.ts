@@ -68,7 +68,7 @@ class App {
 
       buildFrontendOnProd() {
         if (process.env.NODE_ENV === 'production') {
-            this.app.use(express.static(path.join(__dirname, '/Frontend/client')));
+            this.app.use(express.static(path.join(__dirname, '../Frontend/client')));
     
             this.app.get('/*', (req, res) =>
               res.sendFile(path.resolve(__dirname, 'Frontend', 'client', 'index.html'))
