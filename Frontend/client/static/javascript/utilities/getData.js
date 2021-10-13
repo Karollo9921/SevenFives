@@ -1,6 +1,6 @@
 const dataFromServer = async (path, returnOrigin) => {
 
-  let url = path.substring(0, 5) === '/user' ? returnOrigin(true) + '/user/' + window.location.href.substring((returnOrigin(true) + '/user/').length, window.location.href.length) : returnOrigin(true) + path;
+  let url = path.substring(0, 5) === '/user' ? returnOrigin(true) + '/api/user/' + window.location.href.substring((returnOrigin(true) + '/api/user/').length, window.location.href.length) : returnOrigin(true) + path;
   let userUrl = returnOrigin(false) + '/user/';
 
   await axios.get(url, {

@@ -12,7 +12,7 @@ const returnOrigin = (isBackend) => {
 const logout = async (clickEvent) => {
   clickEvent.preventDefault();
 
-  let url = returnOrigin(true) + '/logout';
+  let url = returnOrigin(true) + '/api/logout';
 
   await axios.post(url, { }, {
       headers: {

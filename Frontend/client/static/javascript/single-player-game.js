@@ -23,7 +23,7 @@ const fetchData = (url) => {
 
 // let's initialize the game
 const initializeTheGame = async () => {
-    const login = await fetchData(returnOrigin(true) + '/play/single-player');
+    const login = await fetchData(returnOrigin(true) + '/api/play/single-player');
     const game = new Game({
         btnRollTheDice: document.getElementById('roll'),
         btnCallHimLiar: document.getElementById('call'),

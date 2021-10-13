@@ -15,7 +15,7 @@ const login = async (clickEvent) => {
   var loginInput = document.getElementById('login');
   var passwordInput = document.getElementById('password');
 
-  let url = returnOrigin(true) + '/login';
+  let url = returnOrigin(true) + '/api/login';
 
   await axios.post(url, { login: loginInput.value, password: passwordInput.value }, {
       headers: {
@@ -43,7 +43,7 @@ const register = async (clickEvent) => {
   var passwordInput = document.getElementById('password');
   var password2Input = document.getElementById('password2');
 
-  let url = returnOrigin(true) + '/register';
+  let url = returnOrigin(true) + '/api/register';
 
   let data = JSON.stringify(
       {

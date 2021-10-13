@@ -1,7 +1,7 @@
 import { returnOrigin } from '../utilities/url.js';
 
 const lobbySocket = () => {
-  const socket = io(returnOrigin(true) + '/play/multi-player-lobby');
+  const socket = io(returnOrigin(true) + '/api/play/multi-player-lobby');
 
   socket.on('connect', () => {
       console.log(socket);
