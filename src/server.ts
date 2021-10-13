@@ -34,9 +34,12 @@ const app = new App({
         }),
         session({ 
             secret: 'my secret', 
-            resave: true,
-            saveUninitialized: false,
+            resave: false,
+            saveUninitialized: true,
             store: store,
+            cookie: {
+                secure: true
+            }
         }),
         express.json({ type: "application/json" }),
         express.urlencoded({ extended: true }),
