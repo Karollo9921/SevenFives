@@ -20,7 +20,7 @@ class App {
         dotenv.config();
         connectDB();
 
-        this.app.enable('trust proxy');
+        this.app.set('trust proxy', 1);
 
         this.useMiddlewares(appSetup.middlewares);
         this.useRoutes(appSetup.routes);
