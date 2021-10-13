@@ -1,6 +1,6 @@
 const dataFromServer = async (path, returnOrigin) => {
 
-  let url = path.substring(0, 5) === '/user' ? returnOrigin(true) + '/api/user/' + window.location.href.substring((returnOrigin(true) + '/api/user/').length, window.location.href.length) : returnOrigin(true) + path;
+  let url = path.substring(0, 5) === '/user' ? returnOrigin(true) + '/api/user/' + window.location.href.substring((window.location.origin + '/user/').length, window.location.href.length) : returnOrigin(true) + '/api' + path;
   let userUrl = returnOrigin(false) + '/user/';
 
   await axios.get(url, {
@@ -32,7 +32,7 @@ const dataFromServer = async (path, returnOrigin) => {
   })
   .catch(err => {
     if ((err.toString().substr(err.toString().length - 3) == 404)) {
-        window.location.href = returnOrigin(false) + "/404";
+        // window.location.href = returnOrigin(false) + "/404";
     } else {
         return console.log("This is my error: " + err)
     }

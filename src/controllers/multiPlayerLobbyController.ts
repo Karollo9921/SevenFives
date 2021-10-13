@@ -13,7 +13,7 @@ class MultiPlayerLobbyController {
 
         var io = req.app.get('socketio');
 
-        io.of('/play/multi-player-lobby').on('connection', (socket: socketio.Socket) => {
+        io.of('/api/play/multi-player-lobby').on('connection', (socket: socketio.Socket) => {
 
             console.log('User is connected !');
 

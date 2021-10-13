@@ -34,11 +34,11 @@ const app = new App({
         }),
         session({ 
             secret: 'my secret', 
-            resave: false,
-            saveUninitialized: true,
+            resave: url.url === 'http://localhost:5000' ? true : false,
+            saveUninitialized: url.url === 'http://localhost:5000' ? false : true,
             store: store,
             cookie: {
-                secure: true
+                secure: url.url === 'http://localhost:5000' ? false : true
             }
         }),
         express.json({ type: "application/json" }),
