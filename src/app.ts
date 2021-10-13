@@ -42,7 +42,7 @@ class App {
 
     private useRoutes(routes: RouteModel[]) {
         routes.forEach((route: RouteModel) => {
-            this.app.use('/', this.allowCrossDomain, route.router);
+            this.app.use('/api', this.allowCrossDomain, route.router);
         });
     };
 

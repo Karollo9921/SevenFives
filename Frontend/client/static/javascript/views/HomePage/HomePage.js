@@ -17,6 +17,7 @@ export default class extends AbstractView {
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
         import { logout } from '/static/javascript/utilities/logout.js';
 
+        console.log(returnOrigin(false));
         dataFromServer(window.location.pathname, returnOrigin);
         document.getElementById('logout-btn').addEventListener('click', logout);
         `
