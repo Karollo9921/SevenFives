@@ -6,7 +6,7 @@ export class BidTable {
     };
 
     addColumn(columnNumber) {
-        this.table.innerHTML += `<div class="column-${columnNumber}" class="column">
+        this.table.innerHTML += `<div class="column-${columnNumber} column">
                                     <p class="staking-header">${SINGULAR[columnNumber-1]}</p>
                                     <button class="staking-btn">ONES</button><br>
                                     <button class="staking-btn">TWOS</button><br>

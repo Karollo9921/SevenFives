@@ -1,20 +1,31 @@
 
 /* Single Player CSS */
 .grid {
-    width: 90vw;
-    height: 90vh;
+    width: 99vw;
+    height: 88vh;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: 3fr 7fr;
     gap: 10px;
-    padding: 10px;
+    padding: 25px;
     box-sizing: border-box;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
+			0 10px 10px rgba(0,0,0,0.22);
 }
 
 
 .grid div {
     padding: 10px;
-    border: 1px solid black
+    border: 1px solid #B8C5D6
+}
+
+.player {
+    background: #5998C5;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
 }
 
 
@@ -78,10 +89,22 @@
 }
 
 
+.column {
+    background: #1D263B;
+    color: #fff;
+    border-radius: 4px;
+}
+
 .staking-btn {
     width: 100%;
     height: 15%;
     margin: 0;
+    background: #5998C5;
+    color: #fff;
+    padding: 8px 30px;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 
@@ -101,6 +124,12 @@
     height: 25%;
     width: 100%;
     margin: 0;
+    background: #5998C5;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
 }
 
 
@@ -114,6 +143,7 @@
     font-size: 250%;
     margin-left: 2px;
     margin-right: 2px;
+    color: black;
 }
 
 
@@ -126,21 +156,38 @@
 .decide button {
     height: 100%;
     width: 100%;
+    border: none;
+    outline: none;
+    background: #1D263B;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 20px;
+    cursor: pointer;
 }
 
 
 .statement {
     background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
 }
 
 .statement h3 {
     margin: 35px 0 35px 0;
     text-align: center;
     color: red;
+    font-size: 26px;
 }
 
 
 /* game logging */
+.backlog {
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
+}
+
 .backlog p {
     font-weight: bold;
 }
@@ -152,7 +199,32 @@
 
 
 .backlog li {
-    font-size: medium;
+    font-size: 20px;
     margin: 5px;
     text-align: center;
+}
+
+.sp-player {
+    color: green;
+    font-weight: bold;
+}
+
+.sp-dices {
+    color: blue;
+    font-weight: bold;
+}
+
+.sp-round {
+    color: violet;
+    font-weight: bold;
+}
+
+.singular {
+    color: crimson;
+    font-weight: bold;
+}
+
+.plural {
+    color: darkorange;
+    font-weight: bold;
 }

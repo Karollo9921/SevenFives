@@ -8,29 +8,24 @@ export default class extends AbstractView {
 
     async getHtml() {
         return `
-        <h1>Register</h1>
-        <p id="message"></p>
-        <form action="http://localhost:3000/register" method="POST">
-            <div>
-                <label for="register">Login</label>
-                <input type="text" id="login" name="login" class="login" required>
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="password" required>
-            </div>    
-            <div>
-                <label for="password2">Repeat Password</label>
-                <input type="password" id="password2" name="password2" class="password2" required>
-            </div>
-            <!-- <button type="submit" id="post-btn">Register</button> -->
-            <input 
-                id="post-btn" 
-                type="submit" 
-                value="Register"
-            >       
-        </form>
-        <p>Do you have an account? Go <a href="/login">Login</a></p>  
+        <div class="auth-form">
+            <h1>Register</h1>
+            <p id="message"></p>
+            <form>
+                <p for="register">Register</p>
+                <input type="text" id="login" name="register" required>
+                <p for="password">Password</p>
+                <input type="password" id="password" name="password" required>
+                <p for="password2">Confirm Password</p>
+                <input type="password" id="password2" name="password2" required>
+                <input 
+                    type="submit" 
+                    value="Register"
+                    id="post"
+                >
+            </form>
+            <a href="/login">Already have an account?</a>
+        </div>
         `
     }
 
@@ -41,7 +36,7 @@ export default class extends AbstractView {
         import { register } from '/static/javascript/utilities/postData.js';
 
         dataFromServer(window.location.pathname, returnOrigin);        
-        document.getElementById('post-btn').addEventListener('click', register);
+        document.getElementById('post').addEventListener('click', register);
         `
     }
 }

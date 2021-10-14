@@ -12,20 +12,18 @@
 <body>
     <div class="container">
         <nav class="navbar">
-            <div class="nav-links">
-                <div>
-                    <a href="/" data-link="">Home</a>
-                    <a href="/play" id="play" style="visibility: hidden;">Let's Play!</a>
-                </div>
-                <div>
-                    <a href="/login" class="login-register" style="visibility: hidden;" data-link>Login</a>
-                    <a href="/register" class="btn login-register" style="visibility: hidden;" data-link>Register</a>
-                    <a href="/user" id="user-route" style="visibility: hidden;" data-link>Your profile</a>
-                    <form id="logout" method="post" style="visibility: hidden;">
-                        <button id="logout-btn" type="submit">Logout</button>
-                    </form>
-                </div>
-            </div>
+            <ul class="left-ul">
+                <li><a href="/" data-link="">Home</a></li>
+                <li><a href="/play" id="play" style="display: none;">Let's Play!</a></li>
+            </ul>
+            <ul class="right-ul">
+                <li><a href="/login" class="login-register" style="display: none;" data-link>Login</a></li>
+                <li><a href="/register" class="btn login-register" style="display: none;" data-link>Register</a></li>
+                <li><a href="/user" id="user-route" style="display: none;" data-link>Your profile</a></li>
+                <li><form id="logout" method="post" style="display: none;">
+                    <button id="logout-btn" type="submit">Logout</button>
+                </form></li>
+            </ul>
         </nav>
         <div id="app"></div>
     </div>

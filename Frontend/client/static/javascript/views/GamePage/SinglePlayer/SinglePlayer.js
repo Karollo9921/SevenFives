@@ -43,7 +43,7 @@ export default class extends AbstractView {
             <div class="staking-table">
                 <p class="nickname">STAKING - TABLE</p>
                 <div class="grid-table">
-                    <div class="column-1" class="column">
+                    <div class="column-1 column">
                         <p class="staking-header">ONE</p>
                         <button class="staking-btn">ONES</button><br>
                         <button class="staking-btn">TWOS</button><br>
@@ -52,7 +52,7 @@ export default class extends AbstractView {
                         <button class="staking-btn">FIVES</button><br>
                         <button class="staking-btn">SIXES</button>
                     </div>
-                    <div class="column-2" class="column">
+                    <div class="column-2 column">
                         <p class="staking-header">TWO</p>
                         <button class="staking-btn">ONES</button><br>
                         <button class="staking-btn">TWOS</button><br>
@@ -61,7 +61,7 @@ export default class extends AbstractView {
                         <button class="staking-btn">FIVES</button><br>
                         <button class="staking-btn">SIXES</button>
                     </div>
-                    <div class="column-3" class="column">
+                    <div class="column-3 column">
                         <p class="staking-header">THREE</p>
                         <button class="staking-btn">ONES</button><br>
                         <button class="staking-btn">TWOS</button><br>
@@ -70,7 +70,7 @@ export default class extends AbstractView {
                         <button class="staking-btn">FIVES</button><br>
                         <button class="staking-btn">SIXES</button>
                     </div>
-                    <div class="column-4" class="column">
+                    <div class="column-4 column">
                         <p class="staking-header">FOUR</p>
                         <button class="staking-btn">ONES</button><br>
                         <button class="staking-btn">TWOS</button><br>

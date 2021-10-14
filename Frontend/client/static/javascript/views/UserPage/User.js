@@ -8,7 +8,11 @@ export default class extends AbstractView {
 
     async getHtml() {
         return `
-        <h3 id="user-login">User Login: </h3>
+        <div class="user-profile">
+            <h3 id="user-login">User Login: </h3>
+            <h3 class="rating">Rating: </h3>
+            <h3 class="games">Number of games: </h3>
+        </div>
         `
     }
 

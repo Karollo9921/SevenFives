@@ -8,25 +8,22 @@ export default class extends AbstractView {
 
     async getHtml() {
         return `
-        <h1>Login</h1>
-        <p id="message"></p>
-        <form action="http://localhost:3000/login" method="POST">
-            <div>
-                <label for="login">Login</label>
+        <div class="auth-form">
+            <h1>Login</h1>
+            <p id="message"></p>
+            <form>
+                <p for="login">Login</p>
                 <input type="text" id="login" name="login" required>
-            </div>
-            <div>
-                <label for="password">Password</label>
+                <p for="password">Password</p>
                 <input type="password" id="password" name="password" required>
-            </div>    
-            <!-- <button type="submit">Login</button>            -->
-            <input 
-                id="post-btn" 
-                type="submit" 
-                value="Login"
-            >
-        </form>
-        <p>You don't have an account? Go <a href="/register" class="btn">Register</a></p>
+                <input 
+                    type="submit" 
+                    value="Login"
+                    id="post"
+                >
+            </form>
+            <a href="/register">Don't have an account?</a>
+        </div>
         `
     }
 
@@ -37,7 +34,7 @@ export default class extends AbstractView {
         import { login } from '/static/javascript/utilities/postData.js';
 
         dataFromServer(window.location.pathname, returnOrigin);
-        document.getElementById('post-btn').addEventListener('click', login);
+        document.getElementById('post').addEventListener('click', login);
         `
     }
 }

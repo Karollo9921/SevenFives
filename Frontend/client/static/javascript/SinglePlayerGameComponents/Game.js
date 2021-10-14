@@ -45,7 +45,11 @@ export class Game {
                     let positionOfPlayerBid = indexOf(bidHierarchy, convertBidToArray(e.target.parentElement.children[0].textContent, e.target.textContent), arraysIdentical);
 
                     if (positionOfCurrentBid < positionOfPlayerBid) {
-                        this.Backlog.setNewLog(this.playerTurn.nickname + ": " + e.target.parentElement.children[0].textContent + ' ' + e.target.textContent + " !")
+                        this.Backlog.setNewLog(
+                            "<span class='sp-player'>" + this.playerTurn.nickname + "</span>: " + 
+                            "<span class='singular'>" + e.target.parentElement.children[0].textContent + '</span> ' + 
+                            "<span class='plural'>" + e.target.textContent + "</span> !"
+                        )
                         this.playerPreviousTurn = this.playerTurn;
                         this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(this.playerTurn) + 1) % (this.playersInGame().length)];
                         this.currentBid = convertBidToArray(e.target.parentElement.children[0].textContent, e.target.textContent);
@@ -72,9 +76,15 @@ export class Game {
 
                     this.playerTurn.numOfDices += 1;
 
-                    this.Backlog.setNewLog(this.playerTurn.nickname + " calls " + this.playerPreviousTurn.nickname + " a Liar !");
-                    this.Backlog.setNewLog("All Dices: " + this.allDicesInTurn().sort());
-                    this.Backlog.setNewLog(this.playerPreviousTurn.nickname + " is not a Liar, " + this.playerTurn.nickname + " gets extra Dice !");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + this.playerTurn.nickname + "</span> calls " + 
+                        "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span> a Liar !"
+                    );
+                    this.Backlog.setNewLog("All Dices: " + "<span class='sp-dices'>" + this.allDicesInTurn().sort() + "</span>");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " is not a Liar, " + 
+                        "<span class='sp-player'>" + this.playerTurn.nickname + "</span>" + " gets extra Dice !"
+                        );
 
                     this.Statement.setNewStatement(`Round is over, click "OK" to begin next Round`);
                     this.handleButtonsVisibility("none", "none", "block", "hidden");
@@ -95,14 +105,20 @@ export class Game {
 
                     this.playerPreviousTurn.numOfDices += 1;
 
-                    this.Backlog.setNewLog(this.playerTurn.nickname + " calls " + this.playerPreviousTurn.nickname + " a Liar !");
-                    this.Backlog.setNewLog("All Dices: " + this.allDicesInTurn().sort());
-                    this.Backlog.setNewLog(this.playerPreviousTurn.nickname + " is a Liar, " + this.playerPreviousTurn.nickname + " gets extra Dice !");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + this.playerTurn.nickname + "</span>" + " calls " + 
+                        "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " a Liar !"
+                    );
+                    this.Backlog.setNewLog("All Dices: " + "<span class='sp-dices'>" + this.allDicesInTurn().sort() + "</span>");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " is a Liar, " + 
+                        "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " gets extra Dice !"
+                    );
 
                     // check if player should end a game
                     if (this.playerPreviousTurn.numOfDices > 5) {
                         this.playerPreviousTurn.inGame = false;
-                        this.Backlog.setNewLog(this.playerPreviousTurn.nickname + " lost and end his Game !");
+                        this.Backlog.setNewLog("<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " lost and end his Game !");
                         document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[0].style.color = "Red"
                         document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[1].textContent = "Out of the Game"
                     } else {
@@ -127,7 +143,10 @@ export class Game {
                 button.addEventListener('click', (e) => {
                     let singularPartOfBid = e.target.parentElement.children[0].textContent;
                     let pluralPartOfBid = e.target.textContent;
-                    this.Backlog.setNewLog(Player.nickname + ": " + singularPartOfBid + ' ' + pluralPartOfBid + " !")
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + Player.nickname + "</span>" + ": " + 
+                        "<span class='singular'>" + singularPartOfBid + "</span>" + ' ' + "<span class='plural'>" + pluralPartOfBid + "</span>" + " !"
+                    );
                     this.playerPreviousTurn = Player;
                     this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(Player) + 1) % (this.playersInGame().length)];
                     this.currentBid = convertBidToArray(singularPartOfBid, pluralPartOfBid);
@@ -144,11 +163,19 @@ export class Game {
                 if (Math.random()*100 > 33) {
                     let bestType = this.bestTruthType(Player.dices);
                     let extraDiceToBid = Math.max(Math.floor((this.numOfAllDices - bestType[1]) / 4) - 1, 0);
-                    this.Backlog.setNewLog(Player.nickname + ": " + SINGULAR[bestType[1] - 1 + extraDiceToBid] + ' ' + PLURAL[bestType[0][bestType[0].length - 1] - 1] + " !");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + Player.nickname + "</span>" + ": " + 
+                        "<span class='singular'>" + SINGULAR[bestType[1] - 1 + extraDiceToBid] + "</span>" + ' ' + 
+                        "<span class='plural'>" + PLURAL[bestType[0][bestType[0].length - 1] - 1] + "</span>" + " !"
+                        );
                     this.currentBid = convertBidToArray(SINGULAR[bestType[1] - 1 + extraDiceToBid], PLURAL[bestType[0][bestType[0].length - 1] - 1]);
                 } else {
                     let randomDice = Math.ceil(Math.random()*6);
-                    this.Backlog.setNewLog(Player.nickname + ": " + SINGULAR[Math.max(Math.floor(this.numOfAllDices / 4) - 1, 0)] + ' ' + PLURAL[randomDice - 1] + " !");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + Player.nickname + "</span>" + ": " + 
+                        "<span class='singular'>" + SINGULAR[Math.max(Math.floor(this.numOfAllDices / 4) - 1, 0)] + "</span>" + ' ' + 
+                        "<span class='plural'>" + PLURAL[randomDice - 1] + "</span>" + " !"
+                        );
                     this.currentBid = convertBidToArray(SINGULAR[Math.max(Math.floor(this.numOfAllDices / 4) - 1, 0)], PLURAL[randomDice - 1]);
                 }
                 this.playerPreviousTurn = this.playerTurn;
@@ -179,20 +206,26 @@ export class Game {
                 ) {
 
                     let dicesfromBidTemp = this.allDicesInTurn().filter((el) => (el) === this.currentBid[0])
-                    this.Backlog.setNewLog(Player.nickname + " calls " + this.playerPreviousTurn.nickname + " a Liar !");
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + Player.nickname + "</span>" + " calls " + 
+                        "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " a Liar !"
+                        );
 
                     // previous player is not a Liar
                     if (dicesfromBidTemp.length >= this.currentBid.length) {
 
-                        this.Backlog.setNewLog("All Dices: " + this.allDicesInTurn().sort());
-                        this.Backlog.setNewLog(this.playerPreviousTurn.nickname + " is not a Liar, " + Player.nickname + " gets extra Dice !");
+                        this.Backlog.setNewLog("All Dices: " + "<span class='sp-dices'>" + this.allDicesInTurn().sort() + "</span>");
+                        this.Backlog.setNewLog(
+                            "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " is not a Liar, " + 
+                            "<span class='sp-player'>" + Player.nickname + "</span>" + " gets extra Dice !"
+                            );
 
                         Player.numOfDices += 1
 
                         // check if player should end a game
                         if (Player.numOfDices > 5) {
                             Player.inGame = false;
-                            this.Backlog.setNewLog(Player.nickname + " lost and end his Game !");
+                            this.Backlog.setNewLog("<span class='sp-player'>" + Player.nickname + "</span>" + " lost and end his Game !");
                             document.getElementsByClassName("player")[this.players.indexOf(Player)-1].children[0].style.color = "Red"
                             document.getElementsByClassName("player")[this.players.indexOf(Player)-1].children[1].textContent = "Out of the Game"
                             this.playerTurn = this.playerPreviousTurn;
@@ -204,13 +237,16 @@ export class Game {
                     } else {
 
                         this.playerPreviousTurn.numOfDices += 1;
-                        this.Backlog.setNewLog("All Dices: " + this.allDicesInTurn().sort());
-                        this.Backlog.setNewLog(this.playerPreviousTurn.nickname + " is a Liar, " + this.playerPreviousTurn.nickname + " gets extra Dice !");
+                        this.Backlog.setNewLog("All Dices: " + "<span class='sp-dices'>" + this.allDicesInTurn().sort() + "</span>");
+                        this.Backlog.setNewLog(
+                            "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " is a Liar, " + 
+                            "<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " gets extra Dice !"
+                            );
 
                         // check if player should end a game
                         if (this.playerPreviousTurn.numOfDices > 5) {
                             this.playerPreviousTurn.inGame = false;
-                            this.Backlog.setNewLog(this.playerPreviousTurn.nickname + " lost and end his Game !");
+                            this.Backlog.setNewLog("<span class='sp-player'>" + this.playerPreviousTurn.nickname + "</span>" + " lost and end his Game !");
 
                             if (this.playerPreviousTurn.isBot) {
                                 document.getElementsByClassName("player")[this.players.indexOf(this.playerPreviousTurn)-1].children[0].style.color = "Red"
@@ -262,7 +298,11 @@ export class Game {
                     }
 
                     // bidHierarchy[indexOf(bidHierarchy, this.currentBid, arraysIdentical) + 2];
-                    this.Backlog.setNewLog(Player.nickname + ": " + SINGULAR[newBid.length - 1] + ' ' + PLURAL[newBid[0] - 1] + " !")
+                    this.Backlog.setNewLog(
+                        "<span class='sp-player'>" + Player.nickname + "</span>" + ": " + 
+                        "<span class='singular'>" + SINGULAR[newBid.length - 1] + "</span>" + ' ' + 
+                        "<span class='plural'>" + PLURAL[newBid[0] - 1] + "</span>" + " !"
+                        )
                     this.playerPreviousTurn = this.playerTurn;
                     this.playerTurn = this.playersInGame()[(this.playersInGame().indexOf(this.playerTurn) + 1) % this.playersInGame().length];
                     this.currentBid = newBid;
@@ -276,7 +316,10 @@ export class Game {
         this.currentBid = [];
         this.turn = 0;
         this.Backlog.clearBacklog();
-        this.Backlog.setNewLog(`It's Round ${this.round}, we have ${this.allDicesInTurn().length} dices in this Round !`);
+        this.Backlog.setNewLog(
+            "It's " + "<span class='sp-round'>" + "Round " + this.round + "</span>" + ", we have " + "<span class='sp-dices'>" + 
+            this.allDicesInTurn().length + " dices"  + "</span>" + " in this Round !"
+            );
         this.singleTurn(this.playerTurn);
         e.stopImmediatePropagation();
     };
@@ -304,7 +347,7 @@ export class Game {
         });
 
         if (this.playersInGame().length < 2) {
-            this.Backlog.setNewLog(`Game is Over! The Winner is: ${this.playersInGame()[0].nickname}`)
+            this.Backlog.setNewLog("Game is Over! The Winner is: " + "<span class='sp-player'>" + this.playersInGame()[0].nickname + "</span>")
             this.Backlog.setNewLog("Refresh a page and play again !")
             this.Statement.setNewStatement(`Game is Over! The Winner is: ${this.playersInGame()[0].nickname}`);
             this.btnRollTheDice.style.display = "none";
