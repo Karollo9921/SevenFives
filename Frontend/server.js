@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 
-app.use("/static", express.static(path.resolve(__dirname, "client", "static")));
+app.use("/static", express.static(path.resolve(__dirname, "client")));
 app.use(cors({ origin: "http://127.0.0.1:3000", credentials: true }));
 app.use(session({
     secret: 'my secret', 
