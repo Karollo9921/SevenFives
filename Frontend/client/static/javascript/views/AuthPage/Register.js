@@ -12,7 +12,7 @@ export default class extends AbstractView {
             <h1>Register</h1>
             <p id="message"></p>
             <form>
-                <p for="register">Register</p>
+                <p for="register">Login</p>
                 <input type="text" id="login" name="register" required>
                 <p for="password">Password</p>
                 <input type="password" id="password" name="password" required>

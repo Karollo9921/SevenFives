@@ -78,7 +78,7 @@ nav ul li a {
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
 			0 10px 10px rgba(0,0,0,0.22);
     width: 320px;
-    height: 470px;
+    height: 510px;
     top: 50%;
     left: 50%;
     position: absolute;
@@ -90,7 +90,7 @@ nav ul li a {
 
 .auth-form h1 {
     margin: 0;
-    padding: 0 0 70px;
+    padding: 0 0 25px;
     text-align: center;
 
 }
@@ -114,6 +114,8 @@ nav ul li a {
     height: 40px;
     color: #fff;
     font-size: 16px;
+    margin-bottom: 20px;
+    margin-top: 10px;
 }
 
 .auth-form form input[type="submit"] {
@@ -178,6 +180,13 @@ nav ul li a {
     padding: 20px 30px;
     color: #fff;
     justify-content: space-between;
+}
+
+#message {
+    color: black;
+    font-weight: bold;
+    font-size: 15px;
+    padding: 10px;
 }
 
 

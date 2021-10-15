@@ -31,7 +31,12 @@ const login = async (clickEvent) => {
       }
   })
   .catch(err => {
-      document.getElementById('message').innerHTML = err
+    document.getElementById('message').style.display = 'block';
+    document.getElementById('message').innerHTML = err.response.data.message;
+    setTimeout(() => {
+      document.getElementById('message').textContent = '';
+      document.getElementById('message').style.display = 'none';
+    }, 7000);
   });
 };
 
@@ -45,36 +50,33 @@ const register = async (clickEvent) => {
 
   let url = returnOrigin(true) + '/api/register';
 
-  let data = JSON.stringify(
-      {
-          login: loginInput.value,
-          password: passwordInput.value,
-          password2: password2Input.value
-      }
-  );
-
-  const postData = await fetch(url, {
-      method: 'POST',
-      // credentials: 'include',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      redirect: 'manual',
-      body: data
+  await axios.post(url, { 
+    login: loginInput.value, 
+    password: passwordInput.value, 
+    password2: password2Input.value 
+  }, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
   })
-  .then(response => response.json())
-  .then(data => {
-      if (data.success) {
-          window.location.href = data.url;
-      } else {
-          document.getElementById('message').innerHTML = data.message
-      }
+  .then(response => {
+    console.log(response);
+    if (response.data.success) {
+        window.location.href = response.data.url;
+    } else {
+        document.getElementById('message').innerHTML = response.data.message
+    }
   })
   .catch(err => {
-      document.getElementById('message').innerHTML = err
+    document.getElementById('message').style.display = 'block';
+    document.getElementById('message').innerHTML = err.response.data.message;
+    setTimeout(() => {
+      document.getElementById('message').textContent = '';
+      document.getElementById('message').style.display = 'none';
+    }, 7000);
   });
 
-  return postData().json();
 };
 
 export { login, register };

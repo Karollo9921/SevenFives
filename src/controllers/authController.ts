@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../models/user';
 import bcrypt from 'bcrypt';
 import url from '../config/url';
+import validate from '../utilities/userDataValidation';
 
 
 class AuthController {
@@ -29,11 +30,12 @@ class AuthController {
         //req.body
         let { login, password, password2 } = req.body;
 
-        //check password confirmation
-        if (password !== password2) {
+        //validate User's data
+        console.log(validate(login, password, password2))
+        if (validate(login, password, password2).length > 0) {
             return res.status(400).json({
                 success: false,
-                message: "Password do not match",
+                message: validate(login, password, password2),
                 url: url.url + "/register"
             });
         }
