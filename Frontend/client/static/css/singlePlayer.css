@@ -107,6 +107,12 @@
     cursor: pointer;
 }
 
+.staking-btn:hover {
+    background: #E1BC29;
+    color: #454545;
+    font-weight: bold;
+}
+
 
 .staking-header {
     text-align: center;
@@ -165,6 +171,11 @@
     cursor: pointer;
 }
 
+
+.decide button:hover {
+    background: #fff;
+    color: #1D263B;  
+}
 
 .statement {
     background-color: white;

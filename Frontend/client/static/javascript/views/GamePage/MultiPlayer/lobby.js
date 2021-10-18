@@ -20,7 +20,7 @@ export default class extends AbstractView {
             <div class="create-game">
                 <form id="create" method="post">
                     <button id="create-btn" type="submit">Create a Game</button>
-                    <p for="numOfPlayers">Number of Players:</p>
+                    <p for="numOfPlayers">Set the Number of Players:</p>
                     <select name="numOfPlayers" id="numOfPlayers">
                       <option value="2">2</option>
                       <option value="3">3</option>

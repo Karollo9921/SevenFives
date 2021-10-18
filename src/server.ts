@@ -24,6 +24,7 @@ const io: socketio.Server = new socketio.Server({
 });
 
 
+
 const app = new App({
     port: 3000,
     middlewares: [
@@ -67,5 +68,9 @@ io.attach(server);
 
 
 app.app.set('socketio', io);
+
+
+
+
 
 

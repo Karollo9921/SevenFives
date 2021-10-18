@@ -39,7 +39,7 @@
     grid-column-end: 9; 
     grid-row-start: 1;
     grid-row-end: 2;
-    background-color: #5998C5;
+    background-color: #fff;
     text-align: center;
     vertical-align: center;
     border-radius: 10px;
@@ -52,7 +52,7 @@
     text-align: center;
     vertical-align: center; 
     margin-top: 5px;
-    color: #fff;
+    color: black;
     font-weight: bold;
 }
 
@@ -126,6 +126,9 @@
 }
 
 .create-game form select {
+    background-color: #1D263B;
+    color: #fff;
+    font-weight: bold;
     margin-right: 5px;
     border-radius: 10px;
     box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
@@ -156,9 +159,12 @@
     margin: 2px;
     border-bottom: 1px solid;
     height: 40px;
-    font-size: 16px;
+    font-size: 20px;
     margin-bottom: 20px;
     margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
 }
 
 #post-btn {
