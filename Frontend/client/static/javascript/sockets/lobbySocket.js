@@ -2,12 +2,13 @@ import { returnOrigin } from '../utilities/url.js';
 
 const lobbySocket = () => {
      
+//   window.setTimeout(function(){ document.location.reload(true); }, 15000);
   const socket = io(returnOrigin(true) + '/api/play/multi-player-lobby');
   let activePlayers = [];
   console.log(activePlayers);
 
   socket.on('connect', () => {
-      console.log(socket);
+    console.log(`User Connected: ${socket.id}`);
   })
 
   socket.on('disconnect', () => {
@@ -22,6 +23,7 @@ const lobbySocket = () => {
 
   socket.on('updateUsersList', (user) => {
     var login = user.user;
+    console.log('From updateUsersList: ' + login);
     
     if (!activePlayers.includes(login)) {
         console.log('Hello');
