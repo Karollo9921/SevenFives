@@ -24,7 +24,6 @@ const io: socketio.Server = new socketio.Server({
 });
 
 
-
 const app = new App({
     port: 3000,
     middlewares: [
@@ -59,15 +58,30 @@ const app = new App({
 const server: http.Server = app.listen();
 io.attach(server);
 
-// io.of('/play/multi-player-lobby').on('connection', (socket: socketio.Socket) => {
-//     socket.emit('messageFromServer', { data: "req.session.user!.login" });
-//     socket.on('dataToServer', (dataFromClient: object) => {
-//         console.log(dataFromClient)
-//     });
-// });
+
+var users: { user: string, sid: string }[] = [];
+
+io.of('/api/play/multi-player-lobby').on('connection', (socket: socketio.Socket) => {
+
+    socket.on('dataToServer', (dataFromClient: object) => {
+
+        let userToAdd = { user: Object.values(dataFromClient)[0], sid: socket.id }
+        if (!users.find(user => user === userToAdd)) {
+            users.push(userToAdd)
+        }
+        
+        io.of('/api/play/multi-player-lobby').emit('updateUsersList', users);
+    });
+
+    socket.on('disconnect', () => {
+        users = users.filter((user) => user.sid !== socket.id)
+        io.of('/api/play/multi-player-lobby').emit('updateUsersList', users);
+    })
+
+});
 
 
-app.app.set('socketio', io);
+// app.app.set('socketio', io);
 
 
 

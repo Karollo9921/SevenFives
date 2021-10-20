@@ -1,54 +1,50 @@
 import { returnOrigin } from '../utilities/url.js';
 
-const lobbySocket = () => {
-     
-//   window.setTimeout(function(){ document.location.reload(true); }, 15000);
+const fetchUser = (url) => {
+  return axios.get(url, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      withCredentials: true
+    }
+  ).then(response => response.data.user);
+};
+
+const displayUsers = (users) => {
+  document.getElementById("ul-players").innerHTML = '';
+  users.forEach((user) => {
+    let liNode = document.createElement("li");
+    let divNode = document.createElement("div");
+    let pNode = document.createElement("p");
+    let textnode = document.createTextNode(user.user)
+    pNode.appendChild(textnode)
+    divNode.classList.add("green");
+    pNode.classList.add(user.user)
+    liNode.appendChild(divNode);
+    liNode.appendChild(pNode)
+    document.getElementById("ul-players").appendChild(liNode);
+  })
+}
+
+
+const user = await fetchUser(returnOrigin(true) + '/api/play/multi-player-lobby');
+
+const lobbySocket = async () => {
   const socket = io(returnOrigin(true) + '/api/play/multi-player-lobby');
-  let activePlayers = [];
-  console.log(activePlayers);
 
   socket.on('connect', () => {
     console.log(`User Connected: ${socket.id}`);
-  })
+  });
+
 
   socket.on('disconnect', () => {
-    socket.on('updateUsersList', (user) => {
-        var login = user.user
-        let liTagToDelete = Array.from(document.getElementById("ul-players").children).find(activePlayer => activePlayer.children[1].textContent = login);
-        console.log(liTagToDelete);
-    //     liTagToDelete.remove();
-    //     activePlayers = activePlayers.filter(player => player !== login)
-      });
+    console.log(socket.id);
   });
 
-  socket.on('updateUsersList', (user) => {
-    var login = user.user;
-    console.log('From updateUsersList: ' + login);
-    
-    if (!activePlayers.includes(login)) {
-        console.log('Hello');
-        var liNode = document.createElement("li");
-        var divNode = document.createElement("div");
-        var pNode = document.createElement("p");
-        var textnode = document.createTextNode(login)
-        pNode.appendChild(textnode)
-        divNode.classList.add("green");
-        pNode.classList.add(login)
-        liNode.appendChild(divNode);
-        liNode.appendChild(pNode)
-        document.getElementById("ul-players").appendChild(liNode);
-    }
-
-    Array.from(document.getElementById("ul-players").children).forEach(activePlayer => {
-        if (!activePlayers.includes(activePlayer.children[1].textContent)) {
-          activePlayers.push(activePlayer.children[1].textContent)
-        }
-    })
-
-    console.log(activePlayers)
+  socket.emit('dataToServer', { user: user.login });
+  socket.on('updateUsersList', (users) => {
+    displayUsers(users);
   });
-
-  socket.emit('dataToServer', { data: "Data from the Client!" });
 }
 
 export { lobbySocket }
