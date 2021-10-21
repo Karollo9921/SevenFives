@@ -73,6 +73,11 @@ io.of('/api/play/multi-player-lobby').on('connection', (socket: socketio.Socket)
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', users);
     });
 
+    socket.on('send-chat-message', (data: object) => {
+        console.log(data);
+        io.of('/api/play/multi-player-lobby').emit('display-chat-message', data)
+    })
+
     socket.on('disconnect', () => {
         users = users.filter((user) => user.sid !== socket.id)
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', users);

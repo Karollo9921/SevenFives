@@ -198,7 +198,7 @@ export class Game {
                 if (
                     dicesfromBidOnPlayerHand.length < this.currentBid.length 
                         &&
-                    (1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.67
+                    (1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.5
                         &&
                     (powerOfLastBid > indexOf(bidHierarchy, bestTypeArr, arraysIdentical))
                         &&

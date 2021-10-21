@@ -9,8 +9,8 @@ export default class extends AbstractView {
     async getHtml() {
         return `
         <div class="grid-lobby">
-            <div class="chat">
-                <p><span class="nickname">Karollo</span><span class="message">: Hello !</span></p>
+            <div class="chat" id="chat">
+            <!-- <p class="message-paragraph"><span class="nickname">Karollo</span>: <span class="message"> Hello !</span></p> -->
             </div>
             <div class="players-header"><h3>Active Players:</h3></div>
             <div class="logged-in-players">
@@ -29,13 +29,13 @@ export default class extends AbstractView {
                     </select>
                 </form>
             </div>
-            <div class="input-message">
+            <form class="input-message">
                 <input type="text" id="chat-message" name="chat-message" required>
-                <input id="post-btn" type="submit" value="Send Message">
-            </div>
+                <input id="chat-message-btn" type="submit" value="Send Message">
+            </form>
             <div class="list-of-games">
                 <ul>
-                    <li><p>Game Crated by Karollo For 5 Players </p><p claas="slots">1/5</p><a href="/play/:id" class="join-btn">JOIN</a></li>
+                <!-- <li><p>Game Crated by Karollo For 5 Players </p><p claas="slots">1/5</p><a href="/play/:id" class="join-btn">JOIN</a></li> -->
                 </ul>
             </div>
         </div>
