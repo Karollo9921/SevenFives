@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import MultiPlayerLobbyController from '../controllers/multiPlayerLobbyController'
 import RouteModel from './routeModel/routeModel';
-import * as socketio from 'socket.io';
 
 
 class MultiPlayerLobby extends RouteModel {
@@ -16,6 +15,7 @@ class MultiPlayerLobby extends RouteModel {
 
     protected initRoutes() {
         this.router.get('/play/multi-player-lobby', new MultiPlayerLobbyController().getMultiPlayerLobby)
+        this.router.post('/play/multi-player-lobby', new MultiPlayerLobbyController().postCreateMultiPlayerGame)
     };
 
 };

@@ -47,10 +47,13 @@ export default class extends AbstractView {
         import { returnOrigin } from '/static/javascript/utilities/url.js';
         import { lobbySocket } from '/static/javascript/sockets/lobbySocket.js';
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
+        import { createGame } from '/static/javascript/utilities/createGame.js';
         import { logout } from '/static/javascript/utilities/logout.js';
 
         lobbySocket();
+        console.log(createGame);
         dataFromServer(window.location.pathname, returnOrigin);
+        document.getElementById('create-btn').addEventListener('click', createGame);
         document.getElementById('logout-btn').addEventListener('click', logout);
         `
     }
