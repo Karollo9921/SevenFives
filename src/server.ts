@@ -3,6 +3,7 @@ import AuthRoute from '../src/routes/authRoute';
 import UserRoute from '../src/routes/userRoute';
 import PlayRoute from './routes/playRoute';
 import SinglePlayer from './routes/singlePlayerRoute';
+import MultiPlayer from './routes/multiPlayerRoute';
 import MultiPlayerLobby from './routes/multiPlayerLobbyRoute';
 
 
@@ -50,6 +51,7 @@ const app = new App({
         new UserRoute(),
         new PlayRoute(),
         new SinglePlayer(),
+        new MultiPlayer(),
         new MultiPlayerLobby(),
     ]
 });
@@ -74,14 +76,17 @@ io.of('/api/play/multi-player-lobby').on('connection', (socket: socketio.Socket)
     });
 
     socket.on('send-chat-message', (data: object) => {
-        console.log(data);
         io.of('/api/play/multi-player-lobby').emit('display-chat-message', data)
-    })
+    });
+
+    socket.on('create-a-game', (data: object) => {
+        io.of('/api/play/multi-player-lobby').emit('display-created-game', data)
+    });
 
     socket.on('disconnect', () => {
         users = users.filter((user) => user.sid !== socket.id)
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', users);
-    })
+    });
 
 });
 

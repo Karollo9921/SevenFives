@@ -12,13 +12,17 @@ class MultiPlayerLobbyController {
         
     }
 
-    getMultiPlayerLobby(req: Request, res: Response) {
-        res.json({ isLoggedIn: req.session.isLoggedIn, user: req.session.user })
+    async getMultiPlayerLobby(req: Request, res: Response) {
+
+        const waitingGames = await Game.find({ status: 'waiting' }, { _id: 1, creator: 1, creator_uid: 1, numOfPlayers: 1 });
+        res.json({ 
+            isLoggedIn: req.session.isLoggedIn, 
+            user: req.session.user,
+            waitingGames: waitingGames
+        })
     }
 
     async postCreateMultiPlayerGame(req: Request, res: Response) {
-
-        console.log(req.body);
         
         try {
             const game = new Game({
@@ -26,12 +30,12 @@ class MultiPlayerLobbyController {
                 players: [ req.session.user?.login ],
                 status: GameStatus.Waiting,
                 backlog: [],
-                result: []
+                result: [],
+                creator: req.session.user?.login,
+                creator_uid: req.session.user?.uid
             });
 
             await game.save();
-
-            console.log(game);
 
             return res.status(201).json({
                 succes: true,

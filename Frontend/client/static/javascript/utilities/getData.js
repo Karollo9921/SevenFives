@@ -21,6 +21,15 @@ const dataFromServer = async (path, returnOrigin) => {
 
           if (path === '/play/single-player') { document.getElementsByClassName('main-player')[0].children[0].textContent = response?.data?.user.login.toUpperCase() }
           if (path.substring(0, 5) === '/user') { document.getElementById('user-login').innerText += " " + response?.data?.login }
+          if (path === '/play/multi-player-lobby') {
+            response?.data?.waitingGames.forEach((game) => {
+              let liNode = document.createElement("li");
+              liNode.innerHTML = `<p>Game Created by<a target="_blank" href="${returnOrigin(false) + '/user/' + game.creator_uid}" class="user-a-tag">${game.creator}</a>For ${game.numOfPlayers} Players </p>
+                                  <p claas="slots">1/${game.numOfPlayers}</p>
+                                  <a href="${returnOrigin(false) + path + '/' + game._id}" class="join-btn">JOIN</a>`;
+              document.getElementById('list-of-games').appendChild(liNode);
+            })
+          }
 
       } else {
           document.getElementsByClassName('login-register')[0].style.display = "block";

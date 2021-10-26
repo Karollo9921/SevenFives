@@ -7,7 +7,9 @@ const GameSchema: Schema = new Schema(
     players: { type: [String], required: true },
     status: { type: String, required: true },
     fullBacklog: { type: [Object] },
-    result: { type: [Object] }
+    result: { type: [Object] },
+    creator: { type: String, required: true },
+    creator_uid: { type: Number, required: true }
   }
 );
 

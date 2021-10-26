@@ -34,7 +34,7 @@ export default class extends AbstractView {
                 <input id="chat-message-btn" type="submit" value="Send Message">
             </form>
             <div class="list-of-games">
-                <ul>
+                <ul id="list-of-games">
                 <!-- <li><p>Game Crated by Karollo For 5 Players </p><p claas="slots">1/5</p><a href="/play/:id" class="join-btn">JOIN</a></li> -->
                 </ul>
             </div>
@@ -47,13 +47,10 @@ export default class extends AbstractView {
         import { returnOrigin } from '/static/javascript/utilities/url.js';
         import { lobbySocket } from '/static/javascript/sockets/lobbySocket.js';
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
-        import { createGame } from '/static/javascript/utilities/createGame.js';
         import { logout } from '/static/javascript/utilities/logout.js';
 
         lobbySocket();
-        console.log(createGame);
         dataFromServer(window.location.pathname, returnOrigin);
-        document.getElementById('create-btn').addEventListener('click', createGame);
         document.getElementById('logout-btn').addEventListener('click', logout);
         `
     }

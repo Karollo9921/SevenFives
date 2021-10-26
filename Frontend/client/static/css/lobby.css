@@ -76,6 +76,7 @@
 .players-header h3 {
     text-align: center;
     vertical-align: center; 
+    justify-content: center;
     margin-top: 5px;
     color: black;
     font-weight: bold;
@@ -153,20 +154,32 @@
 .create-game form select {
     background-color: #1D263B;
     color: #fff;
-    font-weight: bold;
+    font-weight: bolder;
     margin-right: 5px;
     border-radius: 10px;
     box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
 			0 5px 5px rgba(0,0,0,0.22);
 }
 
+.create-game form select:hover {
+    background-color: #fff;
+    color: #1D263B;
+    cursor: pointer;
+}
+
 
 #create-btn {
+    background-color: white;
     width: 50%;
     height: 100%;
     font-size: 20px;
     border-radius: 10px;
-    box-shadow: 0 7px 14px rgba(0,0,0,0.25)
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25);
+}
+
+#create-btn:hover {
+    background-color: #5998C5;
+    color: #fff;
 }
 
 
@@ -232,11 +245,26 @@
 			0 5px 5px rgba(0,0,0,0.22);
 }
 
-.list-of-games li a {
+.user-a-tag {
     text-decoration: none;
     background-color: white;
     padding: 5px;
     border-radius: 30%;
+    font-weight: bold;
+    color: #1D263B;
+}
+
+.join-btn {
+    text-decoration: none;
+    background-color: #1D263B;
+    padding: 5px;
+    border-radius: 30%;
+    color: #fff;
+}
+
+.join-btn:hover {
+    background-color: lightgoldenrodyellow;
+    color: #1D263B;
 }
 
 .list-of-games li p {

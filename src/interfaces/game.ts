@@ -6,4 +6,6 @@ export default interface InterfaceGame extends Document {
     status: string;
     fullBacklog: object[];
     result: object[];
+    creator: string,
+    creator_uid: number
 };
