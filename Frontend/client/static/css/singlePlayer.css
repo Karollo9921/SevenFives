@@ -4,8 +4,8 @@
     width: 99vw;
     height: 88vh;
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: 3fr 7fr;
+    grid-template-columns: repeat(18, 1fr);
+    grid-template-rows: repeat(10, 1fr);
     gap: 10px;
     padding: 25px;
     box-sizing: border-box;
@@ -26,24 +26,32 @@
     border-radius: 10px;
     box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
 			0 5px 5px rgba(0,0,0,0.22);
+    grid-row-start: 1;
+    grid-row-end: 4;
 }
 
 
 .player1 {
+    grid-row-start: 1;
+    grid-row-end: 3;
     grid-column-start: 1;
-    grid-column-end: 4; 
+    grid-column-end: 5; 
 }
 
 
 .player2 {
-    grid-column-start: 4;
-    grid-column-end: 7; 
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: 5;
+    grid-column-end: 9; 
 }
 
 
 .player3 {
-    grid-column-start: 7;
-    grid-column-end: 10; 
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: 9;
+    grid-column-end: 13; 
 }
 
 
@@ -53,29 +61,57 @@
     margin: 15px;
 }
 
-.last-move {
-    margin: 35px 5px 35px 5px;
+.move {
+    position: relative;
+    top: 20%
 }
 
 
 .backlog {
-    grid-column-start: 10;
-    grid-column-end: 13;
+    grid-column-start: 14;
+    grid-column-end: 19;
     grid-row-start: 1;
-    grid-row-end: 3;
+    grid-row-end: 11;
+    background-color: white;
+}
+
+.backlog-multi {
+    grid-column-start: 13;
+    grid-column-end: 19;
+    grid-row-start: 1;
+    grid-row-end: 6;
     background-color: white;
 }
 
 
 .main-player {
+    grid-row-start: 4;
+    grid-row-end: 11;
     grid-column-start: 1;
     grid-column-end: 5;
 }
 
 
 .staking-table {
+    grid-row-start: 4;
+    grid-row-end: 11;
     grid-column-start: 5;
-    grid-column-end: 10;
+    grid-column-end: 13;
+}
+
+.chat-in-game {
+    grid-column-start: 13;
+    grid-column-end: 19;
+    grid-row-start: 6;
+    grid-row-end: 10;
+    background-color: white;
+}
+
+.input-message-multi {
+    grid-column-start: 13;
+    grid-column-end: 19;
+    grid-row-start: 10;
+    grid-row-end: 11;
 }
 
 /* table-staking grid */
@@ -127,6 +163,7 @@
 
 /* main player */
 .dices {
+    display: flex;
     height: 25%;
     width: 100%;
     margin: 0;
@@ -142,14 +179,14 @@
 .dice {
     background-color: white;
     width: 18.7%;
-    height: 90%;
-    display: inline-block;
-    vertical-align: middle;
-    text-align: center;
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 250%;
-    margin-left: 2px;
-    margin-right: 2px;
+    margin: 2px;
     color: black;
+    line-height: 90%;
 }
 
 
@@ -193,23 +230,33 @@
 
 
 /* game logging */
-.backlog {
+.backlog, .backlog-multi {
     border-radius: 10px;
     box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
 			0 5px 5px rgba(0,0,0,0.22);
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
-.backlog p {
+.chat-in-game {
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.backlog, .backlog-multi p {
     font-weight: bold;
 }
 
 
-.backlog ul {
+.backlog, .backlog-multi ul {
     margin-left: 5%;
 }
 
 
-.backlog li {
+.backlog, .backlog-multi li {
     font-size: 20px;
     margin: 5px;
     text-align: center;
@@ -238,4 +285,36 @@
 .plural {
     color: darkorange;
     font-weight: bold;
+}
+
+.input-message-multi {
+    display: flex;
+}
+
+#chat-message-multi {
+    width: 100%;
+    height: 100%;
+    margin: 2px;
+    border-bottom: 1px solid;
+    height: 40px;
+    font-size: 20px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
+}
+
+#chat-message-btn-multi {
+    cursor: pointer;
+    width: auto;
+    height: 100%;
+    height: 40px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding: 5px;
+    margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0 7px 14px rgba(0,0,0,0.25), 
+			0 5px 5px rgba(0,0,0,0.22);
 }
