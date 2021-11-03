@@ -48,7 +48,7 @@ const displayMessageOnChat = (userMessage, message, clientUser) => {
 const displayGameOnLobby = (userLogin, numOfPlayers, user_uid, game_id) => {
   let liNode = document.createElement("li");
   liNode.innerHTML = `<p>Game Created by<a target="_blank" href="${returnOrigin(false) + '/user/' + user_uid}" class="user-a-tag">${userLogin}</a>For ${numOfPlayers} Players </p>
-                      <p claas="slots">1/${numOfPlayers}</p>
+                      <p class="slots"><span id=${game_id}>1</span>/${numOfPlayers}</p>
                       <a href="${returnOrigin(false) + window.location.pathname + '/' + game_id}" class="join-btn">JOIN</a>`;
   document.getElementById('list-of-games').appendChild(liNode);
 };
@@ -60,7 +60,6 @@ const lobbySocket = async () => {
   socket.on('connect', () => {
     console.log(`User Connected: ${socket.id}`);
   });
-
 
   socket.on('disconnect', () => {
     console.log(socket.id);
@@ -103,7 +102,6 @@ const lobbySocket = async () => {
       });
 
       window.location.href = response.data.url;
-      console.log(response);
 
     } catch (error) {
       console.log(error);

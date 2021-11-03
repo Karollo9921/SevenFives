@@ -6,6 +6,7 @@ import NotFound from './views/404/NotFound.js';
 import SelectGame from './views/GamePage/SelectGame.js';
 import SinglePlayer from './views/GamePage/SinglePlayer/SinglePlayer.js';
 import MultiPlayerLobby from './views/GamePage/MultiPlayer/lobby.js';
+import TableIsFull from './views/GamePage/MultiPlayer/TableIsFull.js';
 import MultiPlayerGame from './views/GamePage/MultiPlayer/MultiPlayerGame.js';
 
 
@@ -35,7 +36,8 @@ const router = async () => {
         { path: "/play", view: SelectGame },
         { path: "/play/single-player", view: SinglePlayer },
         { path: "/play/multi-player-lobby", view: MultiPlayerLobby },
-        { path: "/play/multi-player-lobby/:id", view: MultiPlayerGame }
+        { path: "/play/multi-player-lobby/:id", view: MultiPlayerGame },
+        { path: "/play/table-is-full", view: TableIsFull }
     ];
 
     // choose our route

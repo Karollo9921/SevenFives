@@ -15,7 +15,7 @@ export default class extends AbstractView {
                 </ul>
             </div>
             <div class="main-player">
-                <p class="nickname"></p>
+                <p class="nickname" id="nickname"></p>
                 <div class="dices">
                     <div class="dice">?</div>
                 </div>
@@ -48,10 +48,12 @@ export default class extends AbstractView {
         return `
         import { returnOrigin } from '/static/javascript/utilities/url.js';
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
+        import { gameSocket } from '/static/javascript/sockets/gameSocket.js';
         import { prepareMultiGame } from '/static/javascript/utilities/prepareMultiGame.js';
         import { logout } from '/static/javascript/utilities/logout.js';
 
-        prepareMultiGame();
+        prepareMultiGame(gameSocket);
+        // gameSocket();
         dataFromServer(window.location.pathname, returnOrigin);
         document.getElementById('logout-btn').addEventListener('click', logout);
         `
