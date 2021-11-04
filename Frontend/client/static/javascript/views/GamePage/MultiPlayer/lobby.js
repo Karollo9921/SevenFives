@@ -10,7 +10,6 @@ export default class extends AbstractView {
         return `
         <div class="grid-lobby">
             <div class="chat" id="chat">
-            <!-- <p class="message-paragraph"><span class="nickname">Karollo</span>: <span class="message"> Hello !</span></p> -->
             </div>
             <div class="players-header"><h3>Active Players:</h3></div>
             <div class="logged-in-players">
@@ -35,7 +34,6 @@ export default class extends AbstractView {
             </form>
             <div class="list-of-games">
                 <ul id="list-of-games">
-                <!-- <li><p>Game Crated by Karollo For 5 Players </p><p claas="slots">1/5</p><a href="/play/:id" class="join-btn">JOIN</a></li> -->
                 </ul>
             </div>
         </div>
@@ -49,8 +47,8 @@ export default class extends AbstractView {
         import { dataFromServer } from '/static/javascript/utilities/getData.js';
         import { logout } from '/static/javascript/utilities/logout.js';
 
-        lobbySocket();
         dataFromServer(window.location.pathname, returnOrigin);
+        lobbySocket();
         document.getElementById('logout-btn').addEventListener('click', logout);
         `
     }

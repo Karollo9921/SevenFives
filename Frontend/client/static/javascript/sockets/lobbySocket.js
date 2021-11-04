@@ -11,7 +11,7 @@ const fetchUser = (url) => {
       },
       withCredentials: true
     }
-  ).then(response => response.data.user);
+  ).then(response => response.data);
 };
 
 const displayUsers = (users) => {
@@ -30,8 +30,7 @@ const displayUsers = (users) => {
   })
 };
 
-
-const user = await fetchUser(returnOrigin(true) + '/api/play/multi-player-lobby');
+const fetchedData = await fetchUser(returnOrigin(true) + '/api/play/multi-player-lobby');
 
 const displayMessageOnChat = (userMessage, message, clientUser) => {
   let paragraphMessage = document.createElement("p");
@@ -48,10 +47,15 @@ const displayMessageOnChat = (userMessage, message, clientUser) => {
 const displayGameOnLobby = (userLogin, numOfPlayers, user_uid, game_id) => {
   let liNode = document.createElement("li");
   liNode.innerHTML = `<p>Game Created by<a target="_blank" href="${returnOrigin(false) + '/user/' + user_uid}" class="user-a-tag">${userLogin}</a>For ${numOfPlayers} Players </p>
-                      <p class="slots"><span id=${game_id}>1</span>/${numOfPlayers}</p>
+                      <p><span class="taken-seats" id="${game_id}">1</span>/${numOfPlayers}</p>
                       <a href="${returnOrigin(false) + window.location.pathname + '/' + game_id}" class="join-btn">JOIN</a>`;
   document.getElementById('list-of-games').appendChild(liNode);
 };
+
+
+fetchedData.waitingGames.forEach((game) => {
+  displayGameOnLobby(game.creator, game.numOfPlayers, game.creator_uid, game._id)
+})
 
 
 const lobbySocket = async () => {
@@ -68,12 +72,12 @@ const lobbySocket = async () => {
   sendMessageBtn.addEventListener('click', (e) => {
     e.preventDefault();
     var message = document.getElementById('chat-message').value;
-    socket.emit('send-chat-message', { user: user.login, message: message });
+    socket.emit('send-chat-message', { user: fetchedData.user.login, message: message });
     document.getElementById('chat-message').value = '';
   });
 
   socket.on('display-chat-message', (data) => {
-    displayMessageOnChat(data.user, data.message, user.login);
+    displayMessageOnChat(data.user, data.message, fetchedData.user.login);
     let lastElement = chatDiv.lastChild;
     lastElement.scrollIntoView();
   });
@@ -112,11 +116,27 @@ const lobbySocket = async () => {
     displayGameOnLobby(data.user, data.numOfPlayers, data.user_uid, data.game_id);
   });
 
-  socket.emit('dataToServer', { user: user.login });
+  socket.emit('dataToServer', { user: fetchedData.user.login });
+  socket.emit('get-num-of-players-in-game', Array.from(document.getElementsByClassName('taken-seats')).map(ts => { return ts.id }));
 
   socket.on('updateUsersList', (users) => {
     displayUsers(users);
   });
+
+  socket.on('refresh-num-of-players-data', (games) => {
+    let takenSeats = Array.from(document.getElementsByClassName('taken-seats'));
+    takenSeats.forEach((takenSeat) => {
+      let spanId = takenSeat.id
+      let game = games.find((game) => {
+        if (game[spanId] === 0 || game[spanId] > 0) {
+          return game
+        }
+      })
+      takenSeat.textContent = game[spanId];
+    })
+  })
 }
 
 export { lobbySocket }
+
+

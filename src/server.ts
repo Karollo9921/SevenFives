@@ -119,10 +119,10 @@ const socketsToGame = async () => {
 
 var usersInLobby: { user: string, sid: string }[] = [];
 
-io.of('/api/play/multi-player-lobby').on('connection', (socket: socketio.Socket) => {
+io.of('/api/play/multi-player-lobby').on('connection', async (socket: socketio.Socket) => {
 
     socket.on('dataToServer', (dataFromClient: object) => {
-
+        
         let userToAdd = { user: Object.values(dataFromClient)[0], sid: socket.id }
         if (!usersInLobby.find(user => user === userToAdd)) {
             usersInLobby.push(userToAdd)
@@ -130,20 +130,41 @@ io.of('/api/play/multi-player-lobby').on('connection', (socket: socketio.Socket)
         
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', usersInLobby);
     });
-
+    
     socket.on('send-chat-message', (data: object) => {
         io.of('/api/play/multi-player-lobby').emit('display-chat-message', data)
     });
-
+    
     socket.on('create-a-game', (data) => {
         socketsToGame();
         io.of('/api/play/multi-player-lobby').emit('display-created-game', data);
     });
+    
+    socket.on('get-num-of-players-in-game', (gamesId) => {
+        var dataToClient = gamesId.map((gameId: string) => {
+            console.log()
+            return { [gameId]: io.of('/api/play/multi-player-lobby/' + gameId).sockets.size }
+        });
+        io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
+    })
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         usersInLobby = usersInLobby.filter((user) => user.sid !== socket.id)
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', usersInLobby);
+
+        try {
+            var gamesId = await Game.find({ status: 'waiting' }, {_id: 1});
+            var dataToClient = gamesId.map((gameId) => {
+                return { [gameId._id]: io.of('/api/play/multi-player-lobby/' + gameId._id).sockets.size }
+            });
+            console.log(dataToClient)
+            io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
+        } catch (error) {
+            console.log(`Error: ${error}`)
+        }
     });
+
+
 
 });
 
