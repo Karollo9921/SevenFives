@@ -148,20 +148,22 @@ io.of('/api/play/multi-player-lobby').on('connection', async (socket: socketio.S
         io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
     })
 
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', () => {
         usersInLobby = usersInLobby.filter((user) => user.sid !== socket.id)
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', usersInLobby);
 
-        try {
-            var gamesId = await Game.find({ status: 'waiting' }, {_id: 1});
-            var dataToClient = gamesId.map((gameId) => {
-                return { [gameId._id]: io.of('/api/play/multi-player-lobby/' + gameId._id).sockets.size }
-            });
-            console.log(dataToClient)
-            io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
-        } catch (error) {
-            console.log(`Error: ${error}`)
-        }
+        setTimeout(async () => {
+            try {
+                var gamesId = await Game.find({ status: 'waiting' }, {_id: 1});
+                var dataToClient = gamesId.map((gameId) => {
+                    return { [gameId._id]: io.of('/api/play/multi-player-lobby/' + gameId._id).sockets.size }
+                });
+                console.log(dataToClient)
+                io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
+            } catch (error) {
+                console.log(`Error: ${error}`)
+            }
+        }, 2000)
     });
 
 
