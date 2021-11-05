@@ -198,8 +198,16 @@ export class Game {
                 if (
                     dicesfromBidOnPlayerHand.length < this.currentBid.length 
                         &&
-                    (1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.5
-                        &&
+                    (
+                        ((1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.59 && this.numOfAllDices < 7)
+                            ||
+                        ((1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.66 && this.numOfAllDices < 10 && this.numOfAllDices > 6)
+                            ||
+                        ((1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.72 && this.numOfAllDices < 14 && this.numOfAllDices > 9)
+                            ||
+                        ((1-(5/6)**(this.numOfAllDices - this.currentBid.length - dicesfromBidOnPlayerHand.length)) < 0.76 && this.numOfAllDices < 21 && this.numOfAllDices > 13)
+                    )
+                        &&    
                     (powerOfLastBid > indexOf(bidHierarchy, bestTypeArr, arraysIdentical))
                         &&
                     this.currentBid.length > 1
