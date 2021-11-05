@@ -20,12 +20,13 @@ export default class extends AbstractView {
                     <div class="dice">?</div>
                 </div>
                 <div class="decide">
-                    <button id="roll">ROLL THE DICE !</button>
+                    <button id="start" style="display: none;">CLICK START !</button>
+                    <button id="roll" style="display: none;">ROLL THE DICE !</button>
                     <button id="call" style="display: none;">CALL HIM A LIAR !</button>
                     <button id="ok" style="display: none;">OK !</button>
                 </div>
                 <div class="statement">
-                    <h3>ROLL THE DICE ! ^</h3>
+                    <h3 id="statement-message">WE WAIT UNTIL THE PLAYERS ARE READY</h3>
                 </div>
             </div>
             <div class="staking-table">

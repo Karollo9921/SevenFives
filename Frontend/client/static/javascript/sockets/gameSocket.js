@@ -64,23 +64,57 @@ const gameSocket = () => {
   })
 
   socket.on('updateUsersList', (users) => {
-    let yourPosition = users.find((player) => player.user === fetchedData.user.login)?.position
-    // console.log("numOfPlayers: " + fetchedData.game.numOfPlayers)
-    // console.log(yourPosition);
-    // console.log(fetchedData.user.login + ": " + yourPosition);
-    console.log(users);
+    let yourPosition = users.find((player) => player.user === fetchedData.user.login)?.position;
 
     for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
       let playerElement = document.getElementsByClassName(`player${i}-multi`)[0].children[0];
       let playerToDisplay = users.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user
       playerElement.textContent = playerToDisplay?.toUpperCase() || 'WAITING FOR PLAYER';
-    }
+    };
 
-    // if ()
+    if (fetchedData.game.numOfPlayers === users.length) {
+      document.getElementById('start').style.display = 'block';
+      for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
+        let playerElement = document.getElementsByClassName(`player${i}-multi`)[0].children[0];
+        let pNode = document.createElement("p");
+        pNode.id = `player${i}-ready`;
+        pNode.classList.add('ready');
+        pNode.textContent = " NOT READY ;(";
+        pNode.style.color = 'Black';
+        playerElement.appendChild(pNode);
+      }
+    };
 
+    console.log(document.getElementById('start').style.display === 'none');
 
   });
 
+  document.getElementById('start').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.target.style.display = 'none';
+    socket.emit('clicked-start', fetchedData.user.login);
+  })
+
+  socket.on('is-ready', (user) => {
+    Array.from(document.getElementsByClassName('player')).forEach((player) => {
+      player.children[0].textContent.split(' ')[0] === user.toUpperCase() ? player.children[0].children[0].textContent = " READY ;)" : console.log();
+      player.children[0].textContent.split(' ')[0] === user.toUpperCase() ? player.children[0].children[0].style.color = "White" : console.log();
+    });
+
+
+    console.log(document.getElementById('start').style.display === 'none')
+    console.log(Array.from(document.getElementsByClassName('ready')).filter((ready) => ready.textContent === " NOT READY ;(").length === 0)
+
+
+    if (document.getElementById('start').style.display === 'none' && Array.from(document.getElementsByClassName('ready')).filter((ready) => ready.textContent === " NOT READY ;(").length ===0) {
+      document.getElementById('roll').style.display = 'block';
+      document.getElementById('statement-message').textContent = 'ROLL THE DICE !'
+    }
+  });
+
 }
+
+
+
 
 export { gameSocket }

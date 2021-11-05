@@ -102,9 +102,15 @@ const socketsToGame = async () => {
                     console.log(usersInTheGame);
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
                 });
+
                 nsSocket.on('send-chat-message', (data: object) => {
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('display-chat-message', data)
                 });
+
+                nsSocket.on('clicked-start', (user) => {
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('is-ready', user);
+                })
+
                 nsSocket.on('disconnect', () => {
                     usersInTheGame = usersInTheGame.filter((user) => user.sid !== nsSocket.id);
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
