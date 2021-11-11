@@ -29,10 +29,10 @@ const initializeTheGame = async () => {
         btnCallHimLiar: document.getElementById('call'),
         btnOK: document.getElementById('ok'),
         players: [
-            new Player(login, false), 
-            new Player('DAVY JONES', true), 
-            new Player('BILL TURNER', true), 
-            new Player('WILLIAM', true)
+          new Player(login, false), 
+          new Player('DAVY JONES', true), 
+          new Player('BILL TURNER', true), 
+          new Player('WILLIAM', true)
         ],
         Statement: new Statement(document.getElementsByClassName('statement')[0]),
         Backlog: new Backlog(document.getElementsByClassName('backlog')[0]),
