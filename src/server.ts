@@ -148,7 +148,6 @@ io.of('/api/play/multi-player-lobby').on('connection', async (socket: socketio.S
     
     socket.on('get-num-of-players-in-game', (gamesId) => {
         var dataToClient = gamesId.map((gameId: string) => {
-            console.log()
             return { [gameId]: io.of('/api/play/multi-player-lobby/' + gameId).sockets.size }
         });
         io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
