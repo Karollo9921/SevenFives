@@ -9,7 +9,13 @@ const GameSchema: Schema = new Schema(
     fullBacklog: { type: [Object] },
     result: { type: [Object] },
     creator: { type: String, required: true },
-    creator_uid: { type: Number, required: true }
+    creator_uid: { type: Number, required: true },
+    playerTurn: { type: String },
+    playerPreviousTurn: { type: String },
+    currentBid: { type: [Number] },
+    numOfAllDices: { type: Number, required: true },
+    round: { type: Number, required: true },
+    turn: { type: Number, required: true },
   }
 );
 

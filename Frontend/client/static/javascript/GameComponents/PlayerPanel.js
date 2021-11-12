@@ -6,9 +6,11 @@ export class PlayerPanel {
     this.status = '';
     this.numOfDices = 1;
 
-    let pNode = document.createElement("p");
-    pNode.classList.add('ready');
-    this.player.insertBefore(pNode, this.player.children[1]);
+    if (Array.from(this.player.getElementsByClassName('ready')).length === 0) {
+      let pNode = document.createElement("p");
+      pNode.classList.add('ready');
+      this.player.insertBefore(pNode, this.player.children[1]);
+    }
   };
 
   setNickname(login) {

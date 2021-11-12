@@ -72,16 +72,14 @@ const socketsToGame = async () => {
         namespaces.forEach(async (ns) => {
 
             try {
+                var game = await Game.findById(ns._id).exec();
                 var numOfPlayers = await Game.find({ _id: ns._id }, {_id: 0, numOfPlayers: 1});
-                // console.log(numOfPlayers[0].numOfPlayers);
             } catch (error) {
                 console.log(`Error: ${error}`)
             }
 
             io.of('/api/play/multi-player-lobby/' + ns._id).on('connection', async (nsSocket) => {
-                // var game = await Game.findById(ns._id).exec();
                 if (io.of('/api/play/multi-player-lobby/' + ns._id).sockets.size > numOfPlayers[0].numOfPlayers) {
-                    // io.of('/api/play/multi-player-lobby/' + ns._id).emit('full', 'Sorry, table is full');
                     io.of('/api/play/multi-player-lobby/' + ns._id).in(nsSocket.id).emit('full', 'Sorry, table is full');
                 }
 
@@ -94,12 +92,12 @@ const socketsToGame = async () => {
                             position += 1;
                         }
                     });
-                    console.log(dataFromClient);
+
                     let userToAdd = { namespace: ns._id, user: Object.values(dataFromClient)[0], sid: nsSocket.id, position: position }
                     if (!usersInTheGame.find(user => user.user == userToAdd.user)) {
                         usersInTheGame.push(userToAdd)
                     }
-                    console.log(usersInTheGame);
+
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
                 });
 
@@ -109,6 +107,37 @@ const socketsToGame = async () => {
 
                 nsSocket.on('clicked-start', (user) => {
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('is-ready', user);
+                });
+
+                nsSocket.on('clicked-cast-dices', (user) => {
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('the-die-is-cast', user);
+                });
+
+                nsSocket.on('game-started-players', async (players) => {
+                    console.log(players);
+                    console.log(game!.players.length);
+                    try {
+                        if (game!.players.length === 0) {
+                            players.forEach((player: string) => {
+                                game!.players.push(player)
+                            });
+                            game!.playerTurn = game!.players[Math.ceil(Math.random() * game!.players.length) - 1]
+                            await game!.save();
+                        }
+                    } catch (error) {
+                        console.log(`Error: ${error}`)
+                    }
+                })
+
+                nsSocket.on('give-me-game-data', (data) => {
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('start-the-new-round', { 
+                        playerTurn: game!.playerTurn,
+                        round: game!.round,
+                        turn: game!.turn,
+                        playerPreviousTurn: game!.playerPreviousTurn,
+                        numOfAllDices: game!.numOfAllDices,
+                        currentBid: game!.currentBid
+                    });
                 })
 
                 nsSocket.on('disconnect', () => {

@@ -27,12 +27,18 @@ class MultiPlayerLobbyController {
         try {
             const game = new Game({
                 numOfPlayers: req.body.numOfPlayers,
-                players: [ req.session.user?.login ],
+                players: [],
                 status: GameStatus.Waiting,
                 backlog: [],
                 result: [],
                 creator: req.session.user?.login,
-                creator_uid: req.session.user?.uid
+                creator_uid: req.session.user?.uid,
+                playerTurn: '',
+                playerPreviousTurn: '',
+                currentBid: [],
+                numOfAllDices: req.body.numOfPlayers,
+                round: 1,
+                turn: 1,
             });
 
             await game.save();

@@ -22,4 +22,12 @@ export class BidTable {
             Array.from(this.table.children)[Array.from(this.table.children).length-1].remove();
         }
     }
+
+    hideTable() {
+        this.table.style.display = 'none';
+    };
+
+    showTable() {
+        this.table.style.display = 'grid';
+    };
 };

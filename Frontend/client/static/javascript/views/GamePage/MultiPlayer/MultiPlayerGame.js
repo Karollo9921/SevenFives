@@ -21,7 +21,7 @@ export default class extends AbstractView {
                 </div>
                 <div class="decide">
                     <button id="start" style="display: none;">CLICK START !</button>
-                    <button id="roll" style="display: none;">ROLL THE DICE !</button>
+                    <button id="roll" style="display: none;">CAST THE DICES !</button>
                     <button id="call" style="display: none;">CALL HIM A LIAR !</button>
                     <button id="ok" style="display: none;">OK !</button>
                 </div>

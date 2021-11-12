@@ -2,11 +2,11 @@
 import { returnOrigin } from './utilities/url.js';
 
 // let's import modules
-import { Player } from './SinglePlayerGameComponents/Player.js';
-import { BidTable } from './SinglePlayerGameComponents/BidTable.js';
-import { Backlog } from './SinglePlayerGameComponents/Backlog.js';
-import { Statement } from './SinglePlayerGameComponents/Statement.js';
-import { Game } from './SinglePlayerGameComponents/Game.js'
+import { Player } from './GameComponents/Player.js';
+import { BidTable } from './GameComponents/BidTable.js';
+import { Backlog } from './GameComponents/Backlog.js';
+import { Statement } from './GameComponents/Statement.js';
+import { Game } from './GameComponents/Game.js'
 
 
 // let's get player nickname:
