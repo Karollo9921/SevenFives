@@ -138,6 +138,33 @@ const socketsToGame = async () => {
                         numOfAllDices: game!.numOfAllDices,
                         currentBid: game!.currentBid
                     });
+                });
+
+                nsSocket.on('next-turn', async (data) => {
+                    try {
+                            
+                        game!.playerTurn = data.playerTurn;
+                        game!.playerPreviousTurn = data.playerPreviousTurn;
+                        game!.currentBid = data.currentBid;
+                        game!.turn += 1;
+                        game!.fullBacklog.push(data.fullBacklog);
+
+                        await game!.save();
+
+                        io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', { 
+                            playerTurn: game!.playerTurn,
+                            round: game!.round,
+                            turn: game!.turn,
+                            playerPreviousTurn: game!.playerPreviousTurn,
+                            numOfAllDices: game!.numOfAllDices,
+                            currentBid: game!.currentBid,
+                            backlogMessage: data.backlogMessage
+                        });
+
+                    } catch (error) {
+                        console.log(`Error: ${error}`)
+                    }
+                    
                 })
 
                 nsSocket.on('disconnect', () => {

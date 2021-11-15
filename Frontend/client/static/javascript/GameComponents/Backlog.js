@@ -4,10 +4,10 @@ export class Backlog {
     };
 
     setNewLog(log) {
-        this.backlog.children[0].innerHTML += `<li>${log}</li>`
+        this.backlog.children[1].innerHTML += `<li>${log}</li>`
     };
 
     clearBacklog() {
-        this.backlog.children[0].innerHTML = '';
+        this.backlog.children[1].innerHTML = '';
     }
 };
