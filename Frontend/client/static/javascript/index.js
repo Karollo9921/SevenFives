@@ -79,11 +79,15 @@ window.addEventListener("popstate", router);
 // load router after click buttom and load DOM
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
-        if (e.target.ourRoutes("[data-link]")) {
-            e.preventDefault();
-            navigateTo(e.target.href);
-        } else {
-            e.preventDefault();
+        try {
+            if (e.target.ourRoutes("[data-link]")) {
+                e.preventDefault();
+                navigateTo(e.target.href);
+            } else {
+                e.preventDefault();
+            }
+        } catch (error) {
+            // console.log(`Error: ${error}`)
         }
     });
 

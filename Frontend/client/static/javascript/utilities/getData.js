@@ -36,7 +36,11 @@ const dataFromServer = async (path, returnOrigin) => {
           document.getElementsByClassName('login-register')[1].style.display = "block";
           document.getElementById('user-route').style.display = "none";
           document.getElementById('logout').style.display = "none";
-          document.getElementById('play').style.display = "none";                   
+          document.getElementById('play').style.display = "none"; 
+          
+          if (!['/', '/login', '/register'].includes(window.location.pathname)) {
+            window.location.href = returnOrigin(false) + "/login";
+          };
       }
   })
   .catch(err => {
