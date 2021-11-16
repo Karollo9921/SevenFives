@@ -303,7 +303,7 @@ function callALiar(socket, gameData) {
     e.preventDefault();
     buttons.hideAll();
 
-    let allDices = gameData.allDices;
+    let allDices = e.currentTarget.gameData.allDices;
     let dicesfromBidTemp = allDices.filter((el) => (el) === e.currentTarget.gameData.currentBid[0]);
     let backlogMessages = [];
 
