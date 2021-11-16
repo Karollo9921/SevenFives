@@ -11,6 +11,7 @@ export default interface InterfaceGame extends Document {
     playerTurn: string;
     playerPreviousTurn: string;
     currentBid: number[];
+    allDices: number[];
     numOfAllDices: number;
     round: number;
     turn: number;

@@ -14,7 +14,9 @@ export class BidTable {
                                     <button class="staking-btn">FOURS</button><br>
                                     <button class="staking-btn">FIVES</button><br>
                                     <button class="staking-btn">SIXES</button>
-                                </div>`
+                                </div>`;
+
+        this.table.style.gridTemplateColumns = `repeat(${columnNumber}, 1fr)`;  
     }
 
     dropColumns(n) {

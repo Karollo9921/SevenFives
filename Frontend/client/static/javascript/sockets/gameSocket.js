@@ -130,6 +130,8 @@ const gameSocket = () => {
       buttons.setVisible('roll');
       statement.setNewStatement('CAST THE DICES !');
 
+      mainPlayer.setDiceDefault();
+
       socket.emit('game-started-players', playersToBackend)
     };
   });
@@ -138,8 +140,7 @@ const gameSocket = () => {
     e.preventDefault();
     buttons.hideAll();
     mainPlayer.castTheDices();
-    console.log(players);
-    socket.emit('clicked-cast-dices', fetchedData.user.login);
+    socket.emit('clicked-cast-dices', { user: fetchedData.user.login, dices: mainPlayer.dices });
   });
 
   socket.on('the-die-is-cast', (user) => {
@@ -154,11 +155,14 @@ const gameSocket = () => {
       });
 
       buttons.hideAll();
-      socket.emit('give-me-game-data', 'give-me-game-data');
+      socket.emit('start-the-round', 'start-the-round');
     };
   });
 
-  socket.once('start-the-new-round', (gameData) => {
+  socket.on('start-the-new-round', (gameData) => {
+    console.log(`Round ${gameData.round}: Am I here?`);
+    backlog.clearBacklog();
+    mainPlayer.diceCasted = false;
 
     if (gameData.turn === 1) {
       backlog.setNewLog(
@@ -185,6 +189,7 @@ const gameSocket = () => {
   })
 
   socket.on('continue-the-round', (gameData) => {
+
     if (gameData.turn === 1) {
       backlog.setNewLog(
         "This is " + "<span class='sp-round'>" + "Round " + gameData.round + "</span>" + ", we have " + "<span class='sp-dices'>" + 
@@ -192,6 +197,8 @@ const gameSocket = () => {
       );
     } else {
       backlog.setNewLog(gameData.backlogMessage);
+      let player = players.find((player) => player.login === gameData.playerPreviousTurn);
+      if (player) { player.setLastMove(gameData.lastMove) };
     };
 
     if (fetchedData.user.login === gameData.playerTurn) {
@@ -201,13 +208,34 @@ const gameSocket = () => {
       } else {
         statement.setNewStatement(`Call ${gameData.playerPreviousTurn} a Liar or Up The Bid !`);
         buttons.setVisible('call');
+
       }
 
       putBid(socket, fetchedData, gameData, players);
+      callALiar(socket, gameData);
 
     } else {
       statement.setNewStatement(`Now This Is ${gameData.playerTurn}'s Turn !`);
     }
+  });
+
+  socket.on('summary', (data) => {
+    data.backlogMessages.forEach((backlogMessage) => {
+      backlog.setNewLog(backlogMessage);
+    });
+
+    if (fetchedData.user.login === data.playerTurn) {
+      mainPlayer.addDice();
+    } else {
+      let player = players.find((player) => player.login === data.playerTurn);
+      console.log(player);
+      let numOfDices = player.numOfDices + 1;
+      player.setNumOfDices(numOfDices);
+    };
+
+    stakingTable.addColumn(data.numOfAllDices);
+
+    socket.emit('clicked-start', fetchedData.user.login);
   })
 
 
@@ -220,13 +248,21 @@ export { gameSocket };
 function putBid(socket, fetchedData, gameData, players) {
   Array.from(document.getElementsByClassName('staking-btn')).forEach(button => {
     button.addEventListener('click', (e) => {
-        e.preventDefault();
-        let singularPartOfBid = e.target.parentElement.children[0].textContent;
-        let pluralPartOfBid = e.target.textContent;
-        let backlogMessage = 
-            "<span class='sp-player'>" + fetchedData.user.login + "</span>" + ": " + 
-            "<span class='singular'>" + singularPartOfBid + "</span>" + ' ' + "<span class='plural'>" + pluralPartOfBid + "</span>" + " !";
+      e.preventDefault();
 
+      let singularPartOfBid = e.target.parentElement.children[0].textContent;
+      let pluralPartOfBid = e.target.textContent;
+      let positionOfCurrentBid = indexOf(bidHierarchy, gameData.currentBid, arraysIdentical);
+      let positionOfPlayerBid = indexOf(bidHierarchy, convertBidToArray(singularPartOfBid, pluralPartOfBid), arraysIdentical);
+
+      if (positionOfCurrentBid >= positionOfPlayerBid) {
+        statement.setNewStatement(`Your Bid Is Too Low ! Call ${gameData.playerPreviousTurn} a Liar or Up The Bid !`);
+        e.stopImmediatePropagation();
+      } else {
+        let backlogMessage = 
+          "<span class='sp-player'>" + fetchedData.user.login + "</span>" + ": " + 
+          "<span class='singular'>" + singularPartOfBid + "</span>" + ' ' + "<span class='plural'>" + pluralPartOfBid + "</span>" + " !";
+  
         let fullBacklog = {
           playerTurn: gameData.playerTurn,
           playerPreviousTurn: gameData.playerPreviousTurn,
@@ -236,14 +272,15 @@ function putBid(socket, fetchedData, gameData, players) {
           calledALiar: false,
           wasALiar: false
         };
-
+  
         let playerPreviousTurn = gameData.playerTurn;
         let playerTurn = players[0].login
         let currentBid = convertBidToArray(singularPartOfBid, pluralPartOfBid);
         let lastMove = singularPartOfBid + ' ' + pluralPartOfBid;
-
         stakingTable.hideTable();
+        buttons.hideAll();
         e.stopImmediatePropagation();
+  
         socket.emit('next-turn', { 
           backlogMessage: backlogMessage,
           playerPreviousTurn: playerPreviousTurn,
@@ -252,6 +289,105 @@ function putBid(socket, fetchedData, gameData, players) {
           lastMove: lastMove,
           fullBacklog: fullBacklog
         });
+      };
     });
+  });
+}
+
+function callALiar(socket, gameData) {
+  console.log(gameData);
+  document.getElementById('call').gameData = gameData;
+  document.getElementById('call').addEventListener('click', (e) => {
+    e.preventDefault();
+    buttons.hideAll();
+
+    let allDices = gameData.allDices;
+    let dicesfromBidTemp = allDices.filter((el) => (el) === e.currentTarget.gameData.currentBid[0]);
+    let backlogMessages = [];
+
+    if (dicesfromBidTemp.length >= e.currentTarget.gameData.currentBid.length) {
+
+      backlogMessages.push(
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerTurn + "</span> calls " + 
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerPreviousTurn + "</span> a Liar !"
+      );
+
+      backlogMessages.push(
+        "All Dices: " + "<span class='sp-dices'>" + e.currentTarget.gameData.allDices.sort() + "</span>"
+      );
+
+      backlogMessages.push(
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerPreviousTurn + "</span>" + " is not a Liar, " + 
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerTurn + "</span>" + " gets extra Dice !"
+      );
+
+      let fullBacklog = {
+        playerTurn: e.currentTarget.gameData.playerTurn,
+        playerPreviousTurn: e.currentTarget.gameData.playerPreviousTurn,
+        round: e.currentTarget.gameData.round,
+        turn: e.currentTarget.gameData.turn,
+        action: 'Call A Liar !',
+        calledALiar: true,
+        wasALiar: false
+      };
+
+      let playerPreviousTurn = '';
+      let playerTurn = e.currentTarget.gameData.playerTurn;
+      let currentBid = [];
+      let lastMove = '';
+      stakingTable.hideTable();
+      e.stopImmediatePropagation();
+
+      socket.emit('end-of-the-round', { 
+        backlogMessages: backlogMessages,
+        playerPreviousTurn: playerPreviousTurn,
+        playerTurn: playerTurn,
+        currentBid: currentBid,
+        lastMove: lastMove,
+        fullBacklog: fullBacklog
+      });
+
+    } else {
+
+      backlogMessages.push(
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerTurn + "</span> calls " + 
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerPreviousTurn + "</span> a Liar !"
+      );
+
+      backlogMessages.push(
+        "All Dices: " + "<span class='sp-dices'>" + e.currentTarget.gameData.allDices.sort() + "</span>"
+      );
+
+      backlogMessages.push(
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerPreviousTurn + "</span>" + " is a Liar, " + 
+        "<span class='sp-player'>" + e.currentTarget.gameData.playerPreviousTurn + "</span>" + " gets extra Dice !"
+      );
+
+      let fullBacklog = {
+        playerTurn: e.currentTarget.gameData.playerTurn,
+        playerPreviousTurn: e.currentTarget.gameData.playerPreviousTurn,
+        round: e.currentTarget.gameData.round,
+        turn: e.currentTarget.gameData.turn,
+        action: 'Call A Liar !',
+        calledALiar: true,
+        wasALiar: true
+      };
+
+      let playerPreviousTurn = '';
+      let playerTurn = e.currentTarget.gameData.playerPreviousTurn;
+      let currentBid = [];
+      let lastMove = '';
+      stakingTable.hideTable();
+      e.stopImmediatePropagation();
+
+      socket.emit('end-of-the-round', { 
+        backlogMessages: backlogMessages,
+        playerPreviousTurn: playerPreviousTurn,
+        playerTurn: playerTurn,
+        currentBid: currentBid,
+        lastMove: lastMove,
+        fullBacklog: fullBacklog            
+      });
+    }
   });
 }

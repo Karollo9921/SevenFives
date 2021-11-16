@@ -25,11 +25,19 @@ export class MainPlayerPanel {
   };
 
   castTheDices() {
+    this.dices = [];
     Array.from(this.player.getElementsByClassName('dice')).forEach((dice) => {
       dice.textContent = Math.ceil(Math.random() * 6).toString();
+      this.dices.push(parseInt(dice.textContent));
     });
     this.diceCasted = true;
   };
+
+  setDiceDefault() {
+    Array.from(this.player.getElementsByClassName('dice')).forEach((dice) => {
+      dice.textContent = '?';
+    });
+  }
 
   isDiceCasted() {
     return this.diceCasted;

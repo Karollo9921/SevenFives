@@ -13,6 +13,7 @@ const GameSchema: Schema = new Schema(
     playerTurn: { type: String },
     playerPreviousTurn: { type: String },
     currentBid: { type: [Number] },
+    allDices: { type: [Number] },
     numOfAllDices: { type: Number, required: true },
     round: { type: Number, required: true },
     turn: { type: Number, required: true },

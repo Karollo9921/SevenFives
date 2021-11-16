@@ -109,8 +109,17 @@ const socketsToGame = async () => {
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('is-ready', user);
                 });
 
-                nsSocket.on('clicked-cast-dices', (user) => {
-                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('the-die-is-cast', user);
+                nsSocket.on('clicked-cast-dices', async (data) => {
+                    console.log(data.dices);
+
+                    try {
+                        game!.allDices = game!.allDices.concat(data.dices);
+                        await game!.save();
+                    } catch (error) {
+                        console.log(`Error: ${error}`)
+                    }
+
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('the-die-is-cast', data.user);
                 });
 
                 nsSocket.on('game-started-players', async (players) => {
@@ -129,7 +138,8 @@ const socketsToGame = async () => {
                     }
                 })
 
-                nsSocket.on('give-me-game-data', (data) => {
+                nsSocket.on('start-the-round', (data) => {
+                    
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('start-the-new-round', { 
                         playerTurn: game!.playerTurn,
                         round: game!.round,
@@ -149,23 +159,51 @@ const socketsToGame = async () => {
                         game!.turn += 1;
                         game!.fullBacklog.push(data.fullBacklog);
 
+                        console.log(game!.allDices);
+
                         await game!.save();
 
-                        io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', { 
+                        io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', {  
                             playerTurn: game!.playerTurn,
                             round: game!.round,
                             turn: game!.turn,
                             playerPreviousTurn: game!.playerPreviousTurn,
                             numOfAllDices: game!.numOfAllDices,
                             currentBid: game!.currentBid,
-                            backlogMessage: data.backlogMessage
+                            backlogMessage: data.backlogMessage,
+                            allDices: game!.allDices,
+                            lastMove: data.lastMove
                         });
 
                     } catch (error) {
                         console.log(`Error: ${error}`)
                     }
-                    
-                })
+                });
+
+                nsSocket.on('end-of-the-round', async (data) => {
+                    try {
+                        game!.playerTurn = data.playerTurn;
+                        game!.playerPreviousTurn = data.playerPreviousTurn;
+                        game!.currentBid = data.currentBid;
+                        game!.round += 1;
+                        game!.turn = 1;
+                        game!.numOfAllDices += 1;
+                        game!.fullBacklog.push(data.fullBacklog);
+                        game!.allDices = [];
+
+                        await game!.save();
+
+                        io.of('/api/play/multi-player-lobby/' + ns._id).emit('summary', { 
+                            numOfAllDices: game!.numOfAllDices,
+                            playerTurn: data.playerTurn,
+                            backlogMessages: data.backlogMessages,
+                        });
+
+
+                    } catch (error) {
+                        console.log(`Error: ${error}`)
+                    }
+                });
 
                 nsSocket.on('disconnect', () => {
                     usersInTheGame = usersInTheGame.filter((user) => user.sid !== nsSocket.id);

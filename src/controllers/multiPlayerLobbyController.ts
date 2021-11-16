@@ -36,6 +36,7 @@ class MultiPlayerLobbyController {
                 playerTurn: '',
                 playerPreviousTurn: '',
                 currentBid: [],
+                allDices: [],
                 numOfAllDices: req.body.numOfPlayers,
                 round: 1,
                 turn: 1,
