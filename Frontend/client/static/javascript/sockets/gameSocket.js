@@ -247,16 +247,18 @@ export { gameSocket };
 
 function putBid(socket, fetchedData, gameData, players) {
   Array.from(document.getElementsByClassName('staking-btn')).forEach(button => {
+    button.gameData = gameData;
+    button.players = players;
     button.addEventListener('click', (e) => {
       e.preventDefault();
 
       let singularPartOfBid = e.target.parentElement.children[0].textContent;
       let pluralPartOfBid = e.target.textContent;
-      let positionOfCurrentBid = indexOf(bidHierarchy, gameData.currentBid, arraysIdentical);
+      let positionOfCurrentBid = indexOf(bidHierarchy, e.currentTarget.gameData.currentBid, arraysIdentical);
       let positionOfPlayerBid = indexOf(bidHierarchy, convertBidToArray(singularPartOfBid, pluralPartOfBid), arraysIdentical);
 
       if (positionOfCurrentBid >= positionOfPlayerBid) {
-        statement.setNewStatement(`Your Bid Is Too Low ! Call ${gameData.playerPreviousTurn} a Liar or Up The Bid !`);
+        statement.setNewStatement(`Your Bid Is Too Low ! Call ${e.currentTarget.gameData.playerPreviousTurn} a Liar or Up The Bid !`);
         e.stopImmediatePropagation();
       } else {
         let backlogMessage = 
@@ -264,17 +266,17 @@ function putBid(socket, fetchedData, gameData, players) {
           "<span class='singular'>" + singularPartOfBid + "</span>" + ' ' + "<span class='plural'>" + pluralPartOfBid + "</span>" + " !";
   
         let fullBacklog = {
-          playerTurn: gameData.playerTurn,
-          playerPreviousTurn: gameData.playerPreviousTurn,
-          round: gameData.round,
-          turn: gameData.turn,
+          playerTurn: e.currentTarget.gameData.playerTurn,
+          playerPreviousTurn: e.currentTarget.gameData.playerPreviousTurn,
+          round: e.currentTarget.gameData.round,
+          turn: e.currentTarget.gameData.turn,
           action: singularPartOfBid + ' ' + pluralPartOfBid,
           calledALiar: false,
           wasALiar: false
         };
   
-        let playerPreviousTurn = gameData.playerTurn;
-        let playerTurn = players[0].login
+        let playerPreviousTurn = e.currentTarget.gameData.playerTurn;
+        let playerTurn = e.currentTarget.players[0].login
         let currentBid = convertBidToArray(singularPartOfBid, pluralPartOfBid);
         let lastMove = singularPartOfBid + ' ' + pluralPartOfBid;
         stakingTable.hideTable();
