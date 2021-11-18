@@ -25,7 +25,13 @@ export class PlayerPanel {
   };
 
   setNumOfDices(numOfDices) {
-    this.player.children[2].textContent = `Number of Dices: ${numOfDices}`;
+    if (numOfDices < 6) {
+      this.player.children[2].textContent = `Number of Dices: ${numOfDices}`;
+    } else {
+      this.player.children[2].textContent = `This Player Lost and is Out of Game`;
+      this.player.children[2].style.color = 'Red';
+      this.player.children[2].style.fontWeight = "100";
+    }
     this.numOfDices = numOfDices;
   };
 

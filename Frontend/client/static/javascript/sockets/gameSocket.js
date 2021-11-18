@@ -124,13 +124,18 @@ const gameSocket = () => {
 
       alreadyStarted = true;
       players.forEach((player) => {
-        player.setStatus('The dices have not been casted yet !', 'Black')
+        if (player.numOfDices < 6) {
+          player.setStatus('The dices have not been casted yet !', 'Black')
+        };
       });
 
-      buttons.setVisible('roll');
-      statement.setNewStatement('CAST THE DICES !');
-
-      mainPlayer.setDiceDefault();
+      if (mainPlayer.numOfDices < 6) {
+        buttons.setVisible('roll');
+        statement.setNewStatement('CAST THE DICES !');
+        mainPlayer.setDiceDefault();
+      } else {
+        statement.setNewStatement('YOU LOST, YOU CAN ONLY WATCH');
+      }
 
       socket.emit('game-started-players', playersToBackend)
     };
@@ -148,7 +153,7 @@ const gameSocket = () => {
       player.returnPlayerLogin() === user ? player.setStatus('THE DIE IS CAST', 'White') : console.log();
     });
 
-    if (mainPlayer.isDiceCasted() && players.filter((player) => player.returnPlayerStatus() === "The dices have not been casted yet !").length === 0) {
+    if ((mainPlayer.isDiceCasted() || mainPlayer.numOfDices > 5 ) && players.filter((player) => player.returnPlayerStatus() === "The dices have not been casted yet !").length === 0) {
 
       players.forEach((player) => {
         player.setStatus('', 'Black')
@@ -165,6 +170,13 @@ const gameSocket = () => {
     mainPlayer.diceCasted = false;
 
     if (gameData.turn === 1) {
+      if (stakingTable.returnNumOfColumns() > gameData.numOfAllDices) { 
+        stakingTable.dropColumns(stakingTable.returnNumOfColumns() - gameData.numOfAllDices);
+      };
+
+      players.forEach((player) => {
+        player.setLastMove('');
+      });
       backlog.setNewLog(
         "This is " + "<span class='sp-round'>" + "Round " + gameData.round + "</span>" + ", we have " + "<span class='sp-dices'>" + 
         gameData.numOfAllDices + " dices"  + "</span>" + " in this Round !"
@@ -224,17 +236,34 @@ const gameSocket = () => {
     });
 
     if (fetchedData.user.login === data.playerTurn) {
-      mainPlayer.addDice();
+      if (mainPlayer.numOfDices < 5) {
+        mainPlayer.addDice()
+      } else {
+        mainPlayer.setDiceDefault()
+        mainPlayer.numOfDices += 1;
+      }
     } else {
       players.forEach((player) => {
         let playerFromBackend = data.players.filter((dataGamePlayer) => player.login === dataGamePlayer.login);
-        player.setNumOfDices(playerFromBackend[0].numOfDices)
+        player.setNumOfDices(playerFromBackend[0].numOfDices);
       });
     };
 
-    stakingTable.addColumn(data.numOfAllDices);
-
-    socket.emit('clicked-start', fetchedData.user.login);
+    if (data.players.filter((player) => player.numOfDices > 5).length === data.numOfPlayers - 1) {
+      backlog.setNewLog(`Game Is Over`);
+      backlog.setNewLog(`Results:`);
+      let winner = data.players.filter((player) => player.numOfDices < 6)[0].login;
+      backlog.setNewLog(`1: ${winner}`);
+      data.result.reverse().forEach((player) => {
+        backlog.setNewLog(`${player.place}: ${player.player}`);
+      });
+      statement.setNewStatement(`Game Is Over - The Winner Is: ${winner}`)
+      buttons.setVisible('back-to-lobby');
+      socket.emit('game-end', winner);
+    } else {
+      stakingTable.addColumn(data.numOfAllDices);
+      socket.emit('clicked-start', fetchedData.user.login);
+    }
   })
 
 
@@ -275,7 +304,12 @@ function putBid(socket, fetchedData, gameData, players) {
         };
   
         let playerPreviousTurn = e.currentTarget.gameData.playerTurn;
-        let playerTurn = e.currentTarget.players[0].login
+        let playersInGame = e.currentTarget.gameData.players.filter((player) => player.numOfDices < 6).map((player) => { return player.login });
+        let i = 0;
+        while (!playersInGame.includes(e.currentTarget.players[i].login) && i < 10) {
+          i += 1;
+        };
+        let playerTurn = e.currentTarget.players[i].login;
         let currentBid = convertBidToArray(singularPartOfBid, pluralPartOfBid);
         let lastMove = singularPartOfBid + ' ' + pluralPartOfBid;
         stakingTable.hideTable();

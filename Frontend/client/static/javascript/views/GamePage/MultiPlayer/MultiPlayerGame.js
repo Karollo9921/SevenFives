@@ -24,6 +24,7 @@ export default class extends AbstractView {
                     <button id="roll" style="display: none;">CAST THE DICES !</button>
                     <button id="call" style="display: none;">CALL HIM A LIAR !</button>
                     <button id="ok" style="display: none;">OK !</button>
+                    <a id="back-to-lobby" class="btn" href="/play/multi-player-lobby" style="display: none;">GO BACK TO LOBBY</a>
                 </div>
                 <div class="statement">
                     <h3 id="statement-message">WE WAIT UNTIL THE PLAYERS ARE READY</h3>

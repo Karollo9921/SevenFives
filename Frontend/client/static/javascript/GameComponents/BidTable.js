@@ -32,4 +32,8 @@ export class BidTable {
     showTable() {
         this.table.style.display = 'grid';
     };
+
+    returnNumOfColumns() {
+        return Array.from(this.table.children).length;
+    }
 };
