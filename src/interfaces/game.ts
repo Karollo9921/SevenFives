@@ -1,9 +1,10 @@
 import { Document } from 'mongoose';
+import { GameStatus } from '../utilities/gameStatus';
 
 export default interface InterfaceGame extends Document {
     numOfPlayers: number;
-    players: string[];
-    status: string;
+    players: { login: string, numOfDices: number }[];
+    status: GameStatus;
     fullBacklog: object[];
     result: object[];
     creator: string;

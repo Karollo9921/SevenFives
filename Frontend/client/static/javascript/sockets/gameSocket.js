@@ -116,8 +116,8 @@ const gameSocket = () => {
       player.returnPlayerLogin() === user ? player.setStatus('READY ;)', 'White') : console.log();
     });
 
-    if (!playersToBackend.includes(user)) {
-      playersToBackend.push(user);
+    if (playersToBackend.filter((player) => player.login === user).length === 0) {
+      playersToBackend.push({ login: user, numOfDices: 1 });
     }
 
     if (buttons.isStartButtonNone() && players.filter((player) => player.returnPlayerStatus() === "NOT READY ;(").length === 0) {
@@ -208,7 +208,6 @@ const gameSocket = () => {
       } else {
         statement.setNewStatement(`Call ${gameData.playerPreviousTurn} a Liar or Up The Bid !`);
         buttons.setVisible('call');
-
       }
 
       putBid(socket, fetchedData, gameData, players);
@@ -227,10 +226,10 @@ const gameSocket = () => {
     if (fetchedData.user.login === data.playerTurn) {
       mainPlayer.addDice();
     } else {
-      let player = players.find((player) => player.login === data.playerTurn);
-      console.log(player);
-      let numOfDices = player.numOfDices + 1;
-      player.setNumOfDices(numOfDices);
+      players.forEach((player) => {
+        let playerFromBackend = data.players.filter((dataGamePlayer) => player.login === dataGamePlayer.login);
+        player.setNumOfDices(playerFromBackend[0].numOfDices)
+      });
     };
 
     stakingTable.addColumn(data.numOfAllDices);
@@ -297,7 +296,6 @@ function putBid(socket, fetchedData, gameData, players) {
 }
 
 function callALiar(socket, gameData) {
-  console.log(gameData);
   document.getElementById('call').gameData = gameData;
   document.getElementById('call').addEventListener('click', (e) => {
     e.preventDefault();
@@ -337,6 +335,7 @@ function callALiar(socket, gameData) {
       let playerTurn = e.currentTarget.gameData.playerTurn;
       let currentBid = [];
       let lastMove = '';
+
       stakingTable.hideTable();
       e.stopImmediatePropagation();
 

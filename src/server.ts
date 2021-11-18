@@ -17,6 +17,7 @@ import { store } from './config/db';
 import url from './config/url';
 import SessionData from './interfaces/userSession';
 import Game from './models/game';
+import { GameStatus } from './utilities/gameStatus';
 
 
 import * as socketio from 'socket.io';
@@ -68,7 +69,7 @@ var usersInTheGame: { namespace: string, user: string, sid: string, position: nu
 
 const socketsToGame = async () => {
     try {
-        var namespaces = await Game.find({ status: 'waiting' }, {_id: 1});    
+        var namespaces = await Game.find({ status: GameStatus.Waiting }, {_id: 1});    
         namespaces.forEach(async (ns) => {
 
             try {
@@ -122,15 +123,16 @@ const socketsToGame = async () => {
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('the-die-is-cast', data.user);
                 });
 
-                nsSocket.on('game-started-players', async (players) => {
+                nsSocket.on('game-started-players', async (players: { login: string, numOfDices: number }[]) => {
                     console.log(players);
                     console.log(game!.players.length);
                     try {
                         if (game!.players.length === 0) {
-                            players.forEach((player: string) => {
+                            players.forEach((player: { login: string, numOfDices: number }) => {
                                 game!.players.push(player)
                             });
-                            game!.playerTurn = game!.players[Math.ceil(Math.random() * game!.players.length) - 1]
+                            game!.playerTurn = game!.players[Math.ceil(Math.random() * game!.players.length) - 1].login;
+                            game!.status = GameStatus.Started;
                             await game!.save();
                         }
                     } catch (error) {
@@ -164,6 +166,7 @@ const socketsToGame = async () => {
                         await game!.save();
 
                         io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', {  
+                            players: game!.players,
                             playerTurn: game!.playerTurn,
                             round: game!.round,
                             turn: game!.turn,
@@ -182,6 +185,9 @@ const socketsToGame = async () => {
 
                 nsSocket.on('end-of-the-round', async (data) => {
                     try {
+                        let playerIndex = game!.players.findIndex((player => player.login === data.playerTurn));
+                        game!.players[playerIndex].numOfDices += 1;
+
                         game!.playerTurn = data.playerTurn;
                         game!.playerPreviousTurn = data.playerPreviousTurn;
                         game!.currentBid = data.currentBid;
@@ -194,6 +200,7 @@ const socketsToGame = async () => {
                         await game!.save();
 
                         io.of('/api/play/multi-player-lobby/' + ns._id).emit('summary', { 
+                            players: game!.players,
                             numOfAllDices: game!.numOfAllDices,
                             playerTurn: data.playerTurn,
                             backlogMessages: data.backlogMessages,
@@ -253,7 +260,7 @@ io.of('/api/play/multi-player-lobby').on('connection', async (socket: socketio.S
 
         setTimeout(async () => {
             try {
-                var gamesId = await Game.find({ status: 'waiting' }, {_id: 1});
+                var gamesId = await Game.find({ status: GameStatus.Waiting }, {_id: 1});
                 var dataToClient = gamesId.map((gameId) => {
                     return { [gameId._id]: io.of('/api/play/multi-player-lobby/' + gameId._id).sockets.size }
                 });
@@ -264,9 +271,6 @@ io.of('/api/play/multi-player-lobby').on('connection', async (socket: socketio.S
             }
         }, 2000)
     });
-
-
-
 });
 
 

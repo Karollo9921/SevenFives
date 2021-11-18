@@ -14,7 +14,7 @@ class MultiPlayerLobbyController {
 
     async getMultiPlayerLobby(req: Request, res: Response) {
 
-        const waitingGames = await Game.find({ status: 'waiting' }, { _id: 1, creator: 1, creator_uid: 1, numOfPlayers: 1 });
+        const waitingGames = await Game.find({ status: GameStatus.Waiting }, { _id: 1, creator: 1, creator_uid: 1, numOfPlayers: 1 });
         res.json({ 
             isLoggedIn: req.session.isLoggedIn, 
             user: req.session.user,
