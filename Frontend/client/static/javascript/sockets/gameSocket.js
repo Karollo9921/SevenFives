@@ -85,7 +85,7 @@ const gameSocket = () => {
 
   const players = [];
   const playersToBackend = [];
-  var alreadyStarted = false;
+  var alreadyStarted = fetchedData.game.status === 'waiting' ? false : true;
 
   socket.on('updateUsersList', (users) => {
     let yourPosition = users.find((player) => player.user === fetchedData.user.login)?.position;
@@ -231,6 +231,7 @@ const gameSocket = () => {
   });
 
   socket.on('summary', (data) => {
+    console.log(data.players)
     data.backlogMessages.forEach((backlogMessage) => {
       backlog.setNewLog(backlogMessage);
     });
