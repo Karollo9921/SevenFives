@@ -98,8 +98,18 @@ const socketsToGame = async (io: socketio.Server) => {
               nsSocket.on('clicked-cast-dices', async (data) => {
 
                   try {
-                      game!.allDices = game!.allDices.concat(data.dices);
-                      await game!.save();
+                    game!.allDices = game!.allDices.concat(data.dices);
+                    await game!.save();
+
+                    let playerIndex = game!.players.findIndex((player => player.login === data.user));
+                    game!.players[playerIndex] = { 
+                        login: game!.players[playerIndex].login, 
+                        numOfDices: game!.players[playerIndex].numOfDices,
+                        position: game!.players[playerIndex].position,
+                        dices: data.dices
+                    };
+                    await Game.updateOne({ _id: ns._id }, { players: game!.players });
+
                   } catch (error) {
                       console.log(`Error: ${error}`)
                   }
@@ -107,11 +117,13 @@ const socketsToGame = async (io: socketio.Server) => {
                   io.of('/api/play/multi-player-lobby/' + ns._id).emit('the-die-is-cast', data.user);
               });
 
-              nsSocket.on('game-started-players', async (players: { login: string, numOfDices: number }[]) => {
+              nsSocket.on('game-started-players', async (players: { login: string, numOfDices: number, position: number, dices: string[] }[]) => {
                   try {
                       if (game!.players.length === 0) {
-                          players.forEach((player: { login: string, numOfDices: number }) => {
-                              game!.players.push(player)
+                          players.forEach((player: { login: string, numOfDices: number, position: number, dices: string[] }) => {
+                              let position = usersInTheGame.filter((user) => user.user === player.login)[0].position;
+                              player.position = position;
+                              game!.players.push(player);
                           });
                           game!.playerTurn = game!.players[Math.ceil(Math.random() * game!.players.length) - 1].login;
                           game!.status = GameStatus.Started;
@@ -182,38 +194,48 @@ const socketsToGame = async (io: socketio.Server) => {
 
               nsSocket.on('end-of-the-round', async (data) => {
                   try {
-                      let playerIndex = game!.players.findIndex((player => player.login === data.playerTurn));
-                      game!.players[playerIndex] = { login: game!.players[playerIndex].login, numOfDices: game!.players[playerIndex].numOfDices + 1 };
-                      await Game.updateOne({ _id: ns._id }, { players: game!.players });
+                    let playerIndex = game!.players.findIndex((player => player.login === data.playerTurn));
+                    game!.players[playerIndex] = { 
+                      login: game!.players[playerIndex].login, 
+                      numOfDices: game!.players[playerIndex].numOfDices + 1,
+                      position: game!.players[playerIndex].position,
+                      dices: Array.from({ length: game!.players[playerIndex].numOfDices + 1 > 5 ? 5 : game!.players[playerIndex].numOfDices + 1 }, (v, i) => '?')
+                    };
 
-                      if (game!.players[playerIndex].numOfDices > 5) {
-                          game!.result.push({ 
-                              place: game!.numOfPlayers - game!.result.length,
-                              player: game!.players[playerIndex].login
-                          });
-                          game!.numOfAllDices -= 5;
-                      } else {
-                          game!.numOfAllDices += 1;
-                      }
+                    game!.players.forEach((player) => {
+                      player.dices = player.dices.map((dice) => { return '?' })
+                    });
 
-                      game!.playerTurn = data.playerTurn;
-                      game!.playerPreviousTurn = data.playerPreviousTurn;
-                      game!.currentBid = data.currentBid;
-                      game!.round += 1;
-                      game!.turn = 1;
-                      game!.fullBacklog.push(data.fullBacklog);
-                      game!.allDices = [];
+                    await Game.updateOne({ _id: ns._id }, { players: game!.players });
 
-                      await game!.save();
-
-                      io.of('/api/play/multi-player-lobby/' + ns._id).emit('summary', { 
-                          result: game!.result,
-                          players: game!.players,
-                          numOfPlayers: game!.numOfPlayers,
-                          numOfAllDices: game!.numOfAllDices,
-                          playerTurn: data.playerTurn,
-                          backlogMessages: data.backlogMessages,
+                    if (game!.players[playerIndex].numOfDices > 5) {
+                      game!.result.push({ 
+                        place: game!.numOfPlayers - game!.result.length,
+                        player: game!.players[playerIndex].login
                       });
+                      game!.numOfAllDices -= 5;
+                    } else {
+                      game!.numOfAllDices += 1;
+                    }
+
+                    game!.playerTurn = data.playerTurn;
+                    game!.playerPreviousTurn = data.playerPreviousTurn;
+                    game!.currentBid = data.currentBid;
+                    game!.round += 1;
+                    game!.turn = 1;
+                    game!.fullBacklog.push(data.fullBacklog);
+                    game!.allDices = [];
+
+                    await game!.save();
+
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('summary', { 
+                      result: game!.result,
+                      players: game!.players,
+                      numOfPlayers: game!.numOfPlayers,
+                      numOfAllDices: game!.numOfAllDices,
+                      playerTurn: data.playerTurn,
+                      backlogMessages: data.backlogMessages,
+                    });
 
 
                   } catch (error) {

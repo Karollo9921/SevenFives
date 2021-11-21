@@ -117,7 +117,7 @@ const gameSocket = () => {
     });
 
     if (playersToBackend.filter((player) => player.login === user).length === 0) {
-      playersToBackend.push({ login: user, numOfDices: 1 });
+      playersToBackend.push({ login: user, numOfDices: 1, position: 0, dices: ['?'] });
     }
 
     if (buttons.isStartButtonNone() && players.filter((player) => player.returnPlayerStatus() === "NOT READY ;(").length === 0) {
