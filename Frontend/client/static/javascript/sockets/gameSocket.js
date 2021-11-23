@@ -10,15 +10,6 @@ import { Buttons } from '../GameComponents/Buttons.js';
 import { convertBidToArray, SINGULAR, PLURAL } from '../GameComponents/dictonary.js'
 import { bidHierarchy, arraysIdentical, indexOf } from '../GameComponents/bidHierarchy.js'
 
-// let's initialize Game Panel
-const stakingTable = new BidTable(document.getElementsByClassName('grid-table')[0]);
-const backlog = new Backlog(document.getElementsByClassName('backlog-multi')[0]);
-const statement = new Statement(document.getElementsByClassName('statement')[0]);
-const buttons = new Buttons(document.getElementsByClassName('decide')[0]);
-const mainPlayer = new MainPlayerPanel(document.getElementsByClassName('main-player')[0]);
-
-const chatDiv = document.getElementsByClassName('chat-in-game')[0];
-const sendMessageBtn = document.getElementById('chat-message-btn-multi');
 
 const displayMessageOnChat = (userMessage, message) => {
   let paragraphMessage = document.createElement("p");
@@ -28,22 +19,95 @@ const displayMessageOnChat = (userMessage, message) => {
 
 const fetchUser = (url) => {
   return axios.get(url, {
-      headers: {
+    headers: {
         'Content-Type': 'application/json'
       },
       withCredentials: true
     }
   ).then(response => response.data);
 };
-
+  
 const fetchedData = await fetchUser(
   returnOrigin(true) + 
   '/api/play/multi-player-lobby/' + 
   window.location.href.substring((window.location.origin + '/play/multi-player-lobby/').length, window.location.href.length)
 );
+    
+
+const stakingTable = new BidTable(document.getElementsByClassName('grid-table')[0]);
+const backlog = new Backlog(document.getElementsByClassName('backlog-multi')[0]);
+const statement = new Statement(document.getElementsByClassName('statement')[0]);
+const buttons = new Buttons(document.getElementsByClassName('decide')[0]);
+const mainPlayer = new MainPlayerPanel(document.getElementsByClassName('main-player')[0]);
+
+const chatDiv = document.getElementsByClassName('chat-in-game')[0];
+const sendMessageBtn = document.getElementById('chat-message-btn-multi');
 
 mainPlayer.setNickname(fetchedData.user.login);
-stakingTable.hideTable();
+
+// let's initialize Game Panel
+if (fetchedData.game.status === 'waiting') {
+  stakingTable.hideTable();
+}
+
+if (fetchedData.game.status === 'started') {
+  let you = fetchedData.game.players.filter((player) => player.login === fetchedData.user.login)[0];
+
+  // staking table
+  fetchedData.game.playerTurn === fetchedData.user.login && you.dices[0] !== '?' ? stakingTable.showTable() : stakingTable.hideTable();
+
+  // main player dices 
+  mainPlayer.dices = you.dices;
+  mainPlayer.setNumOfDices(you.dices.length);
+  mainPlayer.displayDices();
+
+  // display proper statement
+  if (fetchedData.game.turn === 1 && fetchedData.game.playerTurn === fetchedData.user.login) { statement.setNewStatement(`What Is Your Bid ${fetchedData.user.login} ?`) };
+  if (fetchedData.game.turn > 1 && fetchedData.game.playerTurn === fetchedData.user.login) { statement.setNewStatement(`Call ${fetchedData.game.playerPreviousTurn} a Liar or Up The Bid !`) };
+  if (you.dices[0] === '?') {statement.setNewStatement('CAST THE DICES !')};
+  if (you.numOfDices > 5) { statement.setNewStatement('YOU LOST, YOU CAN ONLY WATCH') };
+  if (fetchedData.game.playerTurn !== fetchedData.user.login) { statement.setNewStatement(`Now This Is ${fetchedData.game.playerTurn}'s Turn !`) };
+
+  // display proper button
+  if ((fetchedData.game.playerTurn !== fetchedData.user.login) || (fetchedData.game.turn === 1 && fetchedData.game.playerTurn === fetchedData.user.login)) { buttons.hideAll() };
+  if (fetchedData.game.turn > 1 && fetchedData.game.playerTurn === fetchedData.user.login) { buttons.setVisible('call') };
+  if (you.dices[0] === '?') { buttons.setVisible('roll') };
+
+  //display fullbacklog of current round
+  let backlogsToDisplay = fetchedData.game.fullBacklog.filter((log) => log.round === fetchedData.game.round);
+  backlog.setNewLog(
+    "This is " + "<span class='sp-round'>" + "Round " + fetchedData.game.round + "</span>" + ", we have " + "<span class='sp-dices'>" + 
+    fetchedData.game.numOfAllDices + " dices"  + "</span>" + " in this Round !"
+  );
+
+  backlogsToDisplay.forEach((log) => {
+    if (log.calledALiar) {
+      backlog.setNewLog(
+        "<span class='sp-player'>" + log.playerTurn + "</span> calls " + 
+        "<span class='sp-player'>" + log.playerPreviousTurn + "</span> a Liar !"
+      );
+      if (log.wasALiar) {
+        backlog.setNewLog("All Dices: " + "<span class='sp-dices'>" + fetchedData.game.allDices.sort() + "</span>");
+        backlog.setNewLog(
+          "<span class='sp-player'>" + log.playerPreviousTurn + "</span>" + " is a Liar, " + 
+          "<span class='sp-player'>" + log.playerPreviousTurn + "</span>" + " gets extra Dice !"
+        );
+      } else {
+        backlog.setNewLog("All Dices: " + "<span class='sp-dices'>" + fetchedData.game.allDices.sort() + "</span>");
+        backlog.setNewLog(
+          "<span class='sp-player'>" + log.playerPreviousTurn + "</span>" + " is not a Liar, " + 
+          "<span class='sp-player'>" + log.playerTurn + "</span>" + " gets extra Dice !"
+        );
+      }
+    } else {
+      backlog.setNewLog(
+        "<span class='sp-player'>" + log.playerTurn + "</span>" + ": " + 
+        "<span class='singular'>" + log.action.split(' ')[0] + "</span>" + ' ' + "<span class='plural'>" + log.action.split(' ')[1] + "</span>" + " !"
+      );
+    };
+  });
+};
+
 document.getElementById('nickname').textContent = fetchedData.user.login.toUpperCase();
 
 const gameSocket = () => {
@@ -77,6 +141,11 @@ const gameSocket = () => {
 
   socket.on('hello', (hello) => {
     socket.emit('data-to-server', { user: fetchedData.user.login });
+
+    if (fetchedData.game.status === 'started' && fetchedData.game.playerTurn === fetchedData.user.login) {
+      putBid(socket, fetchedData, fetchedData.game, players);
+      callALiar(socket, fetchedData.game);
+    };
   });
 
   socket.on('full', (reason) => {
@@ -88,12 +157,30 @@ const gameSocket = () => {
   var alreadyStarted = fetchedData.game.status === 'waiting' ? false : true;
 
   socket.on('updateUsersList', (users) => {
-    let yourPosition = users.find((player) => player.user === fetchedData.user.login)?.position;
-    for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
-      let playerToDisplay = users.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user
-      let nickname = playerToDisplay || 'WAITING FOR PLAYER';
-      players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
-      players[i - 1].setNickname(nickname);
+
+    if (fetchedData.game.status === 'waiting') {
+      let yourPosition = users.find((player) => player.user === fetchedData.user.login)?.position;
+      for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
+        let playerToDisplay = users.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user
+        let nickname = playerToDisplay || 'WAITING FOR PLAYER';
+        players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
+        players[i - 1].setNickname(nickname);
+      };
+    }
+
+    if (fetchedData.game.status === 'started') {
+      let yourIndex = fetchedData.game.players.findIndex((player => player.login === fetchedData.user.login));
+      let yourPosition = fetchedData.game.players[yourIndex].position;
+      for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
+        let playerToDisplay = fetchedData.game.players.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)
+        players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
+        players[i - 1].setNickname(playerToDisplay?.login);
+        let playerIndex = fetchedData.game.players.findIndex((player => player.login === playerToDisplay?.login));
+        let numOfDices = fetchedData.game.players[playerIndex].numOfDices || 1;
+        players[i - 1].setNumOfDices(numOfDices)
+        playerToDisplay.dices[0] === '?' ? players[i - 1].setStatus('The dices have not been casted yet !', 'Black') : players[i - 1].setStatus('', 'Black');
+        players[i - 1].setLastMove('');
+      };
 
     };
 
@@ -185,7 +272,7 @@ const gameSocket = () => {
       backlog.setNewLog(gameData.backlogMessage);
     }
 
-    if (fetchedData.user.login === gameData.playerTurn) {
+    if (fetchedData.user.login === gameData.playerTurn && gameData.players.filter((pl) => pl.dices[0] === '?').length === 0) {
       stakingTable.showTable();
       if (gameData.turn === 1) {
         statement.setNewStatement(`What Is Your Bid ${gameData.playerTurn} ?`);
@@ -193,10 +280,19 @@ const gameSocket = () => {
         statement.setNewStatement(`Call ${gameData.playerPreviousTurn} a Liar or Up The Bid !`);
       }
 
+      console.log('Am I here?')
       putBid(socket, fetchedData, gameData, players);
 
     } else {
-      statement.setNewStatement(`Now This Is ${gameData.playerTurn}'s Turn !`);
+      if (gameData.players.filter((pl) => pl.dices[0] === '?').length === 0) {
+        statement.setNewStatement(`Now This Is ${gameData.playerTurn}'s Turn !`);
+      } else {
+        if (gameData.players.filter((pl) => pl.login === fetchedData.user.login && pl.dices[0] === '?').length > 0) {
+          statement.setNewStatement(`Cast The Dice !`);
+        } else {
+          statement.setNewStatement(`We Wait Until All Players Cast The Dice !`);
+        }
+      }
     }
   })
 
@@ -213,7 +309,7 @@ const gameSocket = () => {
       if (player) { player.setLastMove(gameData.lastMove) };
     };
 
-    if (fetchedData.user.login === gameData.playerTurn) {
+    if (fetchedData.user.login === gameData.playerTurn && gameData.players.filter((pl) => pl.dices[0] === '?').length === 0) {
       stakingTable.showTable();
       if (gameData.turn === 1) {
         statement.setNewStatement(`What Is Your Bid ${gameData.playerTurn} ?`);
@@ -222,11 +318,20 @@ const gameSocket = () => {
         buttons.setVisible('call');
       }
 
+      console.log('Am I here?')
       putBid(socket, fetchedData, gameData, players);
       callALiar(socket, gameData);
 
     } else {
-      statement.setNewStatement(`Now This Is ${gameData.playerTurn}'s Turn !`);
+      if (gameData.players.filter((pl) => pl.dices[0] === '?').length === 0) {
+        statement.setNewStatement(`Now This Is ${gameData.playerTurn}'s Turn !`);
+      } else {
+        if (gameData.players.filter((pl) => pl.login === fetchedData.user.login && pl.dices[0] === '?').length > 0) {
+          statement.setNewStatement(`Cast The Dice !`);
+        } else {
+          statement.setNewStatement(`We Wait Until All Players Cast The Dice !`);
+        }
+      }
     }
   });
 

@@ -166,26 +166,26 @@ const socketsToGame = async (io: socketio.Server) => {
               nsSocket.on('next-turn', async (data) => {
                   try {
                           
-                      game!.playerTurn = data.playerTurn;
-                      game!.playerPreviousTurn = data.playerPreviousTurn;
-                      game!.currentBid = data.currentBid;
-                      game!.turn += 1;
-                      game!.fullBacklog.push(data.fullBacklog);
+                    game!.playerTurn = data.playerTurn;
+                    game!.playerPreviousTurn = data.playerPreviousTurn;
+                    game!.currentBid = data.currentBid;
+                    game!.turn += 1;
+                    game!.fullBacklog.push(data.fullBacklog);
 
-                      await game!.save();
-
-                      io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', {  
-                          players: game!.players,
-                          playerTurn: game!.playerTurn,
-                          round: game!.round,
-                          turn: game!.turn,
-                          playerPreviousTurn: game!.playerPreviousTurn,
-                          numOfAllDices: game!.numOfAllDices,
-                          currentBid: game!.currentBid,
-                          backlogMessage: data.backlogMessage,
-                          allDices: game!.allDices,
-                          lastMove: data.lastMove
-                      });
+                    await game!.save();
+                    
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', {  
+                        players: game!.players,
+                        playerTurn: game!.playerTurn,
+                        round: game!.round,
+                        turn: game!.turn,
+                        playerPreviousTurn: game!.playerPreviousTurn,
+                        numOfAllDices: game!.numOfAllDices,
+                        currentBid: game!.currentBid,
+                        backlogMessage: data.backlogMessage,
+                        allDices: game!.allDices,
+                        lastMove: data.lastMove
+                    });
 
                   } catch (error) {
                       console.log(`Error: ${error}`)

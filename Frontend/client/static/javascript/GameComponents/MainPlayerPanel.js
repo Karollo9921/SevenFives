@@ -24,6 +24,13 @@ export class MainPlayerPanel {
     this.numOfDices += 1;
   };
 
+  addDice2() {
+    let diceDiv = document.createElement('div');
+    diceDiv.classList.add('dice');
+    diceDiv.textContent = '?';
+    this.player.children[1].appendChild(diceDiv);
+  };
+
   castTheDices() {
     this.dices = [];
     Array.from(this.player.getElementsByClassName('dice')).forEach((dice) => {
@@ -38,6 +45,17 @@ export class MainPlayerPanel {
       dice.textContent = '?';
     });
   }
+
+  displayDices() {
+    this.diceCasted = this.dices[0] === '?' ? false : true;
+    for (let i = 0; i < this.dices.length - 1; i++) {
+      this.addDice2();
+    };
+
+    for (let i = 0; i < this.dices.length; i++) {
+      this.player.getElementsByClassName('dice')[i].textContent = this.dices[i].toString();
+    };
+  };
 
   isDiceCasted() {
     return this.diceCasted;
