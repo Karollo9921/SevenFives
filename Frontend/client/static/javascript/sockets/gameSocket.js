@@ -405,6 +405,10 @@ const gameSocket = () => {
     }
   })
 
+  socket.on('creator-disconnected-game-aborted', (data) => {
+    statement.setNewStatement(`Creator Left The Game - Go Back To Lobby`)
+    buttons.setVisible('back-to-lobby');
+  })
 
 
 }

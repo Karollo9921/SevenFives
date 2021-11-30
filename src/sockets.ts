@@ -266,16 +266,15 @@ const socketsToGame = async (io: socketio.Server) => {
               });
 
               nsSocket.on('disconnect', async () => {
-                  usersInTheGame = usersInTheGame.filter((user) => user.sid !== nsSocket.id);
-                  let disconnectedUser = usersInTheGame.filter((user) => user.sid === nsSocket.id)[0].user;
-                  
-                  if (game!.status === 'waiting' && disconnectedUser === game!.creator ) {
-                    game!.status = GameStatus.Aborted;
-                    await game!.save();
-                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('creator-disconnected-game-aborted', disconnectedUser);
-                  } else {
-                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
-                  }
+                usersInTheGame = usersInTheGame.filter((user) => user.sid !== nsSocket.id);
+         
+                if (game!.status === 'waiting' && usersInTheGame.filter((user) => user.user === game!.creator).length === 0) {
+                  game!.status = GameStatus.Aborted;
+                  await game!.save();
+                  io.of('/api/play/multi-player-lobby/' + ns._id).emit('creator-disconnected-game-aborted', usersInTheGame.filter((user) => user.user === game!.creator));
+                } else {
+                  io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
+                }
               });
           })
       })
