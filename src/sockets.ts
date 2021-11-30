@@ -1,5 +1,6 @@
 import Game from './models/game';
 import { GameStatus } from './utilities/gameStatus';
+import User from './models/user';
 import * as socketio from 'socket.io';
 
 const socketsToLobby = (io: socketio.Server) => {
@@ -30,7 +31,7 @@ const socketsToLobby = (io: socketio.Server) => {
             return { [gameId]: io.of('/api/play/multi-player-lobby/' + gameId).sockets.size }
         });
         io.of('/api/play/multi-player-lobby').emit('refresh-num-of-players-data', dataToClient);
-    })
+    });
 
     socket.on('disconnect', () => {
         usersInLobby = usersInLobby.filter((user) => user.sid !== socket.id)
@@ -56,7 +57,7 @@ const socketsToGame = async (io: socketio.Server) => {
       var namespaces = await Game.find({ status: GameStatus.Waiting }, {_id: 1});    
       namespaces.forEach(async (ns) => {
           
-          let usersInTheGame: { namespace: string, user: string, sid: string, position: number, gameStatus: GameStatus, allPlayers: any[] }[] = [];
+          let usersInTheGame: { namespace: string, user: string, rating: number, sid: string, position: number, gameStatus: GameStatus, allPlayers: any[] }[] = [];
           try {
               var game = await Game.findById(ns._id).exec();
               var numOfPlayers = await Game.find({ _id: ns._id }, {_id: 0, numOfPlayers: 1});
@@ -81,7 +82,8 @@ const socketsToGame = async (io: socketio.Server) => {
 
                   let userToAdd = { 
                       namespace: ns._id, 
-                      user: Object.values(dataFromClient)[0], 
+                      user: Object.values(dataFromClient)[0],
+                      rating: Object.values(dataFromClient)[1],
                       sid: nsSocket.id, 
                       position: position, 
                       gameStatus: game!.status,
@@ -255,14 +257,40 @@ const socketsToGame = async (io: socketio.Server) => {
                   }
               });
 
-              nsSocket.on('game-end', async (winner) => {
-                  try {
-                      game!.result.push({ place: 1, player: winner });
-                      game!.status = GameStatus.Finished;
-                      await game!.save();
-                  } catch (error) {
-                      console.log(`Error: ${error}`)
-                  };
+              nsSocket.once('game-end', async (winner) => {
+                try {
+                    game!.result.push({ place: 1, player: winner });
+                    game!.status = GameStatus.Finished;
+                    await game!.save();
+
+                    var users = await Promise.all(game!.result.map(async (pl) => {
+                        try {
+                            const user = await User.find({ login: pl.player });
+                            return { place: pl.place, user: user[0], addToNewRatingPoints: 0 }
+                        } catch (error) {
+                            console.log(`Error: ${error}`)
+                        }
+                    }));
+
+                    for (let i = 0; i < users.length; i++) {
+                        let xr = users[i]?.user.rating;
+                        for (let j = 0; j < users.length; j++) {
+                            if (i !== j) {
+                                let yr = users[j]?.user.rating;
+                                let d = yr! - xr!
+                                let we = 1/(1 + 10**(d/400))
+                                let wy = users[i]?.place! > users[j]?.place! ? 0 : 1
+                                let diff = wy - we
+                                users[i]!.addToNewRatingPoints += Math.round(((16*diff))*1)/1
+                            };
+                        };
+                        users[i]!.user.rating += users[i]!.addToNewRatingPoints
+                        await users[i]!.user.save();
+                    };
+
+                } catch (error) {
+                    console.log(`Error: ${error}`)
+                };
               });
 
               nsSocket.on('disconnect', async () => {

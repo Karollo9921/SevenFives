@@ -5,7 +5,8 @@ const UserSchema: Schema = new Schema(
     {
         uid: { type: Number, unique: true },
         login: { type: String, required: true },
-        password: { type: String, required: true }
+        password: { type: String, required: true },
+        rating: { type: Number, required: true }
     }
 );
 

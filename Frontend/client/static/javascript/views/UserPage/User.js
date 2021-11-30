@@ -10,8 +10,8 @@ export default class extends AbstractView {
         return `
         <div class="user-profile">
             <h3 id="user-login">User Login: </h3>
-            <h3 class="rating">Rating: </h3>
-            <h3 class="games">Number of games: </h3>
+            <h3 id="rating">Rating: </h3>
+            <h3 id="games">Number of played games: </h3>
         </div>
         `
     }

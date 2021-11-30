@@ -49,7 +49,8 @@ class AuthController {
                 const newUser = new User({
                     uid: uid,
                     login: login,
-                    password: await bcrypt.hash(password, 10)
+                    password: await bcrypt.hash(password, 10),
+                    rating: 1000
                 });
                 // saving user to database 
                 newUser.save().then(user => {

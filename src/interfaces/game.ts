@@ -6,7 +6,7 @@ export default interface InterfaceGame extends Document {
     players: { login: string, numOfDices: number, position: number, dices: string[] }[];
     status: GameStatus;
     fullBacklog: object[];
-    result: object[];
+    result: { place: number, player: string }[];
     creator: string;
     creator_uid: number;
     playerTurn: string;

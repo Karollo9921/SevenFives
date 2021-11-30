@@ -32,6 +32,8 @@ const fetchedData = await fetchData(
   '/api/play/multi-player-lobby/' + 
   window.location.href.substring((window.location.origin + '/play/multi-player-lobby/').length, window.location.href.length)
 );
+
+console.log(fetchedData)
     
 
 const stakingTable = new BidTable(document.getElementsByClassName('grid-table')[0]);
@@ -108,7 +110,7 @@ if (fetchedData.game.status === 'started') {
   });
 };
 
-document.getElementById('nickname').textContent = fetchedData.user.login.toUpperCase();
+document.getElementById('nickname').textContent = `${fetchedData.user.login.toUpperCase()}: ${fetchedData.user.rating}`;
 
 const gameSocket = () => {
   const socket = io(
@@ -141,7 +143,7 @@ const gameSocket = () => {
   });
 
   socket.on('hello', (hello) => {
-    socket.emit('data-to-server', { user: fetchedData.user.login });
+    socket.emit('data-to-server', { user: fetchedData.user.login, rating: fetchedData.user.rating });
 
     if (fetchedData.game.status === 'started' && fetchedData.game.playerTurn === fetchedData.user.login) {
       putBid(socket, fetchedData, fetchedData.game, players);
@@ -169,10 +171,12 @@ const gameSocket = () => {
     if (gameStatus === 'waiting') {
       let yourPosition = dataToUpdate.find((data) => data.user === fetchedData.user.login)?.position;
       for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
-        let playerToDisplay = dataToUpdate.find((data) => data.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user
+        let playerToDisplay = dataToUpdate.find((data) => data.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user;
+        let ratingToDisplay = dataToUpdate.find((data) => data.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.rating;
         let nickname = playerToDisplay || 'WAITING FOR PLAYER';
+        let rating = ratingToDisplay || '';
         players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
-        players[i - 1].setNickname(nickname);
+        players[i - 1].setNickname(`${nickname}: ${rating}`);
       };
     }
 
@@ -182,7 +186,7 @@ const gameSocket = () => {
       for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
         let playerToDisplay = allPlayers.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)
         players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
-        players[i - 1].setNickname(playerToDisplay?.login);
+        players[i - 1].setNickname(`${playerToDisplay?.login}: ${playerToDisplay?.rating}`);
         let playerIndex = allPlayers.findIndex((player => player.login === playerToDisplay?.login));
         let numOfDices = allPlayers[playerIndex].numOfDices || 1;
         players[i - 1].setNumOfDices(numOfDices)
