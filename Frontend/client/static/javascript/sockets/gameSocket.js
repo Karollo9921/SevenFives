@@ -17,7 +17,7 @@ const displayMessageOnChat = (userMessage, message) => {
   chatDiv.appendChild(paragraphMessage);
 }
 
-const fetchUser = (url) => {
+const fetchData = (url) => {
   return axios.get(url, {
     headers: {
         'Content-Type': 'application/json'
@@ -27,7 +27,7 @@ const fetchUser = (url) => {
   ).then(response => response.data);
 };
   
-const fetchedData = await fetchUser(
+const fetchedData = await fetchData(
   returnOrigin(true) + 
   '/api/play/multi-player-lobby/' + 
   window.location.href.substring((window.location.origin + '/play/multi-player-lobby/').length, window.location.href.length)
@@ -119,6 +119,7 @@ const gameSocket = () => {
 
   socket.on('connect', () => {
     console.log(`User Connected: ${socket.id}`);
+    console.log(socket.io)
   });
   
   socket.on('disconnect', () => {
@@ -156,35 +157,67 @@ const gameSocket = () => {
   const playersToBackend = [];
   var alreadyStarted = fetchedData.game.status === 'waiting' ? false : true;
 
-  socket.on('updateUsersList', (users) => {
+  socket.on('updateUsersList', (dataToUpdate) => {
 
-    if (fetchedData.game.status === 'waiting') {
-      let yourPosition = users.find((player) => player.user === fetchedData.user.login)?.position;
+    let gameStatus = dataToUpdate[0].gameStatus;
+    let allPlayers = dataToUpdate[0].allPlayers;
+
+    console.log(`Game status: ${gameStatus}`)
+    console.log(`Number of players: ${allPlayers.length}`)
+    console.log(`Number of connected players: ${dataToUpdate.length}`)
+
+    if (gameStatus === 'waiting') {
+      let yourPosition = dataToUpdate.find((data) => data.user === fetchedData.user.login)?.position;
       for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
-        let playerToDisplay = users.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user
+        let playerToDisplay = dataToUpdate.find((data) => data.position === (yourPosition + i) % fetchedData.game.numOfPlayers)?.user
         let nickname = playerToDisplay || 'WAITING FOR PLAYER';
         players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
         players[i - 1].setNickname(nickname);
       };
     }
 
-    if (fetchedData.game.status === 'started') {
-      let yourIndex = fetchedData.game.players.findIndex((player => player.login === fetchedData.user.login));
-      let yourPosition = fetchedData.game.players[yourIndex].position;
+    if (gameStatus === 'started' && allPlayers.length === dataToUpdate.length) {
+      let yourIndex = allPlayers.findIndex((player => player.login === fetchedData.user.login));
+      let yourPosition = allPlayers[yourIndex].position;
       for (let i = 1; i < fetchedData.game.numOfPlayers; i++) {
-        let playerToDisplay = fetchedData.game.players.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)
+        let playerToDisplay = allPlayers.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)
         players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
         players[i - 1].setNickname(playerToDisplay?.login);
-        let playerIndex = fetchedData.game.players.findIndex((player => player.login === playerToDisplay?.login));
-        let numOfDices = fetchedData.game.players[playerIndex].numOfDices || 1;
+        let playerIndex = allPlayers.findIndex((player => player.login === playerToDisplay?.login));
+        let numOfDices = allPlayers[playerIndex].numOfDices || 1;
         players[i - 1].setNumOfDices(numOfDices)
         playerToDisplay.dices[0] === '?' ? players[i - 1].setStatus('The dices have not been casted yet !', 'Black') : players[i - 1].setStatus('', 'Black');
         players[i - 1].setLastMove('');
       };
-
     };
 
-    if (fetchedData.game.numOfPlayers === users.length && !alreadyStarted) {
+    if (gameStatus === 'started' && allPlayers.length > dataToUpdate.length) {
+      let connectedPlayers = dataToUpdate.map((data) => { return data.user });
+      let disconnectedPlayers = allPlayers.filter((player) => !connectedPlayers.includes(player.login)).map((pl) => { return pl.login });
+      let disconnectedPlayersPanels = players.filter((pl) => disconnectedPlayers.includes(pl.login))
+      console.log('Connected players: ' + connectedPlayers);
+      console.log('Disconnected players: ' + disconnectedPlayers);
+      disconnectedPlayersPanels.forEach((pl) => {
+        let time = 60; 
+        pl.setTimer(`${'1'}:${'00'}`);
+        while (time >= 0) {
+          (function(time) {
+            setTimeout(function() {
+              let minutes = Math.floor((time) / 60);
+              let seconds = (time % (60)).toString().length === 1 ? '0' + (time % (60)).toString() : (time % (60)).toString()
+              pl.setTimer(`${minutes}:${seconds}`);
+            }, 1000 * (60 - time))
+          })(time--)
+          console.log(pl.returnLoginTextContent())
+          if (pl.login === pl.returnLoginTextContent()) {
+            break;
+          };
+        };
+        pl.setNickname(pl.login)
+      });
+    };
+
+    if (fetchedData.game.numOfPlayers === dataToUpdate.length && !alreadyStarted) {
       buttons.setVisible('start');
       players.forEach((player) => {
         player.setStatus('NOT READY ;(', 'Black');

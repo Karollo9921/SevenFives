@@ -39,6 +39,14 @@ export class PlayerPanel {
     this.player.children[3].textContent = `LAST MOVE: ${lastMove}`;
   };
 
+  setTimer(time) {
+    this.player.children[0].textContent = time;
+  };
+
+  returnLoginTextContent() {
+    return this.player.children[0].textContent;
+  };
+
   returnPlayerLogin() {
     return this.login;
   };

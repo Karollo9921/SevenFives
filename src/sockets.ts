@@ -56,7 +56,7 @@ const socketsToGame = async (io: socketio.Server) => {
       var namespaces = await Game.find({ status: GameStatus.Waiting }, {_id: 1});    
       namespaces.forEach(async (ns) => {
           
-          let usersInTheGame: { namespace: string, user: string, sid: string, position: number }[] = [];
+          let usersInTheGame: { namespace: string, user: string, sid: string, position: number, gameStatus: GameStatus, allPlayers: any[] }[] = [];
           try {
               var game = await Game.findById(ns._id).exec();
               var numOfPlayers = await Game.find({ _id: ns._id }, {_id: 0, numOfPlayers: 1});
@@ -79,12 +79,19 @@ const socketsToGame = async (io: socketio.Server) => {
                       }
                   });
 
-                  let userToAdd = { namespace: ns._id, user: Object.values(dataFromClient)[0], sid: nsSocket.id, position: position }
+                  let userToAdd = { 
+                      namespace: ns._id, 
+                      user: Object.values(dataFromClient)[0], 
+                      sid: nsSocket.id, 
+                      position: position, 
+                      gameStatus: game!.status,
+                      allPlayers: game!.players
+                    }
                   if (!usersInTheGame.find(user => user.user == userToAdd.user)) {
                       usersInTheGame.push(userToAdd)
+                      io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
                   }
 
-                  io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
               });
 
               nsSocket.on('send-chat-message', (data: object) => {
@@ -127,6 +134,11 @@ const socketsToGame = async (io: socketio.Server) => {
                           });
                           game!.playerTurn = game!.players[Math.ceil(Math.random() * game!.players.length) - 1].login;
                           game!.status = GameStatus.Started;
+                          usersInTheGame = usersInTheGame.map((user) => { 
+                              user.gameStatus = GameStatus.Started
+                              user.allPlayers = game!.players
+                              return user
+                           })
                           await game!.save();
                       }
                   } catch (error) {
@@ -253,9 +265,17 @@ const socketsToGame = async (io: socketio.Server) => {
                   };
               });
 
-              nsSocket.on('disconnect', () => {
+              nsSocket.on('disconnect', async () => {
                   usersInTheGame = usersInTheGame.filter((user) => user.sid !== nsSocket.id);
-                  io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
+                  let disconnectedUser = usersInTheGame.filter((user) => user.sid === nsSocket.id)[0].user;
+                  
+                  if (game!.status === 'waiting' && disconnectedUser === game!.creator ) {
+                    game!.status = GameStatus.Aborted;
+                    await game!.save();
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('creator-disconnected-game-aborted', disconnectedUser);
+                  } else {
+                    io.of('/api/play/multi-player-lobby/' + ns._id).emit('updateUsersList', usersInTheGame);
+                  }
               });
           })
       })
