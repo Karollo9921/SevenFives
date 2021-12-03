@@ -5,6 +5,7 @@ export class PlayerPanel {
     this.login = '';
     this.status = '';
     this.numOfDices = 1;
+    this.rating = 0;
 
     if (Array.from(this.player.getElementsByClassName('ready')).length === 0) {
       let pNode = document.createElement("p");
@@ -13,9 +14,8 @@ export class PlayerPanel {
     }
   };
 
-  setNickname(login) {
-    this.player.children[0].textContent = login;
-    this.login = login;
+  setNickname(loginAndRating) {
+    this.player.children[0].textContent = loginAndRating;
   };
 
   setStatus(status, color) {

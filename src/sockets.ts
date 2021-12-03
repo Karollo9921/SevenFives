@@ -9,7 +9,7 @@ const socketsToLobby = (io: socketio.Server) => {
 
     socket.on('dataToServer', (dataFromClient: object) => {
 
-        let userToAdd = { user: Object.values(dataFromClient)[0], sid: socket.id }
+        let userToAdd = { user: Object.values(dataFromClient)[0], rating: Object.values(dataFromClient)[1], sid: socket.id }
         if (!usersInLobby.find(user => user === userToAdd)) {
             usersInLobby.push(userToAdd)
         }
@@ -167,7 +167,7 @@ const socketsToGame = async (io: socketio.Server) => {
                   }
 
                   io.of('/api/play/multi-player-lobby/' + ns._id).emit('start-the-new-round', { 
-                      players: game!.players,
+                      players: game!.players.filter((player) => player.numOfDices < 6),
                       playerTurn: game!.playerTurn,
                       round: game!.round,
                       turn: game!.turn,
@@ -189,7 +189,7 @@ const socketsToGame = async (io: socketio.Server) => {
                     await game!.save();
                     
                     io.of('/api/play/multi-player-lobby/' + ns._id).emit('continue-the-round', {  
-                        players: game!.players,
+                        players: game!.players.filter((player) => player.numOfDices < 6),
                         playerTurn: game!.playerTurn,
                         round: game!.round,
                         turn: game!.turn,
@@ -258,39 +258,48 @@ const socketsToGame = async (io: socketio.Server) => {
               });
 
               nsSocket.once('game-end', async (winner) => {
-                try {
-                    game!.result.push({ place: 1, player: winner });
-                    game!.status = GameStatus.Finished;
-                    await game!.save();
+                let counter = 0
+                counter += 1;
 
-                    var users = await Promise.all(game!.result.map(async (pl) => {
-                        try {
-                            const user = await User.find({ login: pl.player });
-                            return { place: pl.place, user: user[0], addToNewRatingPoints: 0 }
-                        } catch (error) {
-                            console.log(`Error: ${error}`)
-                        }
-                    }));
-
-                    for (let i = 0; i < users.length; i++) {
-                        let xr = users[i]?.user.rating;
-                        for (let j = 0; j < users.length; j++) {
-                            if (i !== j) {
-                                let yr = users[j]?.user.rating;
-                                let d = yr! - xr!
-                                let we = 1/(1 + 10**(d/400))
-                                let wy = users[i]?.place! > users[j]?.place! ? 0 : 1
-                                let diff = wy - we
-                                users[i]!.addToNewRatingPoints += Math.round(((16*diff))*1)/1
+                if (counter === 1) {
+                    try {
+                        if(!game!.result.map((r) => { return r.player }).includes(winner)) {
+                            game!.result.push({ place: 1, player: winner });
+                            game!.status = GameStatus.Finished;
+                            await game!.save();
+        
+                            var users = await Promise.all(game!.result.map(async (pl) => {
+                                try {
+                                    const user = await User.find({ login: pl.player });
+                                    return { place: pl.place, user: user[0], addToNewRatingPoints: 0 }
+                                } catch (error) {
+                                    console.log(`Error: ${error}`)
+                                }
+                            }));
+            
+                            for (let i = 0; i < users.length; i++) {
+                                let xr = users[i]?.user.rating;
+                                for (let j = 0; j < users.length; j++) {
+                                    if (i !== j) {
+                                        let yr = users[j]?.user.rating;
+                                        let d = yr! - xr!
+                                        let we = 1/(1 + 10**(d/400))
+                                        let wy = users[i]?.place! > users[j]?.place! ? 0 : 1
+                                        let diff = wy - we
+                                        users[i]!.addToNewRatingPoints += Math.round(((16*diff))*1)/1
+                                        // console.log(`Math.round(((16*diff))*1)/1: ${Math.round(((16*diff))*1)/1}`)
+                                    };
+                                };
+                                // console.log(`${users[i]!.user.login}: ${users[i]!.addToNewRatingPoints}`);
+                                users[i]!.user.rating += users[i]!.addToNewRatingPoints
+                                await users[i]!.user.save();
                             };
-                        };
-                        users[i]!.user.rating += users[i]!.addToNewRatingPoints
-                        await users[i]!.user.save();
+                        }
+    
+                    } catch (error) {
+                        console.log(`Error: ${error}`)
                     };
-
-                } catch (error) {
-                    console.log(`Error: ${error}`)
-                };
+                }
               });
 
               nsSocket.on('disconnect', async () => {

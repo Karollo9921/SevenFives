@@ -177,6 +177,8 @@ const gameSocket = () => {
         let rating = ratingToDisplay || '';
         players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
         players[i - 1].setNickname(`${nickname}: ${rating}`);
+        players[i - 1].login = nickname;
+        players[i - 1].rating = rating;
       };
     }
 
@@ -187,6 +189,8 @@ const gameSocket = () => {
         let playerToDisplay = allPlayers.find((player) => player.position === (yourPosition + i) % fetchedData.game.numOfPlayers)
         players[i - 1] = new PlayerPanel(document.getElementsByClassName(`player${i}-multi`)[0]);
         players[i - 1].setNickname(`${playerToDisplay?.login}: ${playerToDisplay?.rating}`);
+        players[i - 1].login = playerToDisplay?.login;
+        players[i - 1].rating = playerToDisplay?.rating;
         let playerIndex = allPlayers.findIndex((player => player.login === playerToDisplay?.login));
         let numOfDices = allPlayers[playerIndex].numOfDices || 1;
         players[i - 1].setNumOfDices(numOfDices)
@@ -217,7 +221,7 @@ const gameSocket = () => {
             break;
           };
         };
-        pl.setNickname(pl.login)
+        pl.setNickname(`${pl.login}: ${pl.rating}`)
       });
     };
 
@@ -237,7 +241,7 @@ const gameSocket = () => {
 
   socket.on('is-ready', (user) => {
     players.forEach((player) => {
-      player.returnPlayerLogin() === user ? player.setStatus('READY ;)', 'White') : console.log();
+      player.login === user ? player.setStatus('READY ;)', 'White') : console.log();
     });
 
     if (playersToBackend.filter((player) => player.login === user).length === 0) {
@@ -252,6 +256,8 @@ const gameSocket = () => {
           player.setStatus('The dices have not been casted yet !', 'Black')
         };
       });
+
+      console.log(`mainPlayer.numOfDices: ${mainPlayer.numOfDices}`)
 
       if (mainPlayer.numOfDices < 6) {
         buttons.setVisible('roll');

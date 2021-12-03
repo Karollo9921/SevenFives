@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import * as socketio from 'socket.io';
 import Lobby from '../models/lobby';
 import Game from '../models/game';
+import User from '../models/user';
 import { GameStatus } from '../utilities/gameStatus';
 import url from '../config/url';
 
@@ -15,9 +16,11 @@ class MultiPlayerLobbyController {
     async getMultiPlayerLobby(req: Request, res: Response) {
 
         const waitingGames = await Game.find({ status: GameStatus.Waiting }, { _id: 1, creator: 1, creator_uid: 1, numOfPlayers: 1 });
+        const user = await User.findById(req.session.user?._id).exec();
+
         res.json({ 
             isLoggedIn: req.session.isLoggedIn, 
-            user: req.session.user,
+            user: user,
             waitingGames: waitingGames
         })
     }

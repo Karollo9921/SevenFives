@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Game from '../models/game';
+import User from '../models/user';
 import mongoose from 'mongoose';
 
 class MultiPlayerController {
@@ -25,6 +26,7 @@ class MultiPlayerController {
             // );
 
             const game = await Game.findById(gameId).exec();
+            const user = await User.findById(req.session.user?._id).exec();
 
             // console.log(game!.players)
 
@@ -36,7 +38,7 @@ class MultiPlayerController {
             
             res.json({
                 isLoggedIn: req.session.isLoggedIn, 
-                user: req.session.user,
+                user: user,
                 game: game
             })
 
