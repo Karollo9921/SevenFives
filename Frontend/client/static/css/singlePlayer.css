@@ -97,6 +97,7 @@
     grid-row-end: 11;
     grid-column-start: 5;
     grid-column-end: 13;
+    overflow: hidden;
 }
 
 .chat-in-game {
@@ -114,21 +115,19 @@
     grid-row-end: 11;
 }
 
+.column {
+    background: #1D263B;
+    color: #fff;
+    border-radius: 4px;
+}
+
 /* table-staking grid */
 .grid-table {
     display: grid;
     height: 95%;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    overflow: hidden;
     overflow-x: scroll;
-}
-
-
-.column {
-    background: #1D263B;
-    color: #fff;
-    border-radius: 4px;
 }
 
 .staking-btn {
