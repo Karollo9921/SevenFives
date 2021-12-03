@@ -55,13 +55,13 @@ if (fetchedData.game.status === 'waiting') {
 if (fetchedData.game.status === 'started') {
   let you = fetchedData.game.players.filter((player) => player.login === fetchedData.user.login)[0];
 
-  // staking table
-  fetchedData.game.playerTurn === fetchedData.user.login && you.dices[0] !== '?' ? stakingTable.showTable() : stakingTable.hideTable();
-
   // main player dices 
   mainPlayer.dices = you.dices;
   mainPlayer.setNumOfDices(you.dices.length);
   mainPlayer.displayDices();
+  
+  // staking table
+  fetchedData.game.playerTurn === fetchedData.user.login && you.dices[0] !== '?' ? stakingTable.showTable() : stakingTable.hideTable();
 
   // display proper statement
   if (fetchedData.game.turn === 1 && fetchedData.game.playerTurn === fetchedData.user.login) { statement.setNewStatement(`What Is Your Bid ${fetchedData.user.login} ?`) };
@@ -199,31 +199,31 @@ const gameSocket = () => {
       };
     };
 
-    if (gameStatus === 'started' && allPlayers.length > dataToUpdate.length) {
-      let connectedPlayers = dataToUpdate.map((data) => { return data.user });
-      let disconnectedPlayers = allPlayers.filter((player) => !connectedPlayers.includes(player.login)).map((pl) => { return pl.login });
-      let disconnectedPlayersPanels = players.filter((pl) => disconnectedPlayers.includes(pl.login))
-      console.log('Connected players: ' + connectedPlayers);
-      console.log('Disconnected players: ' + disconnectedPlayers);
-      disconnectedPlayersPanels.forEach((pl) => {
-        let time = 60; 
-        pl.setTimer(`${'1'}:${'00'}`);
-        while (time >= 0) {
-          (function(time) {
-            setTimeout(function() {
-              let minutes = Math.floor((time) / 60);
-              let seconds = (time % (60)).toString().length === 1 ? '0' + (time % (60)).toString() : (time % (60)).toString()
-              pl.setTimer(`${minutes}:${seconds}`);
-            }, 1000 * (60 - time))
-          })(time--)
-          console.log(pl.returnLoginTextContent())
-          if (pl.login === pl.returnLoginTextContent()) {
-            break;
-          };
-        };
-        pl.setNickname(`${pl.login}: ${pl.rating}`)
-      });
-    };
+    // if (gameStatus === 'started' && allPlayers.length > dataToUpdate.length) {
+    //   let connectedPlayers = dataToUpdate.map((data) => { return data.user });
+    //   let disconnectedPlayers = allPlayers.filter((player) => !connectedPlayers.includes(player.login)).map((pl) => { return pl.login });
+    //   let disconnectedPlayersPanels = players.filter((pl) => disconnectedPlayers.includes(pl.login))
+    //   console.log('Connected players: ' + connectedPlayers);
+    //   console.log('Disconnected players: ' + disconnectedPlayers);
+    //   disconnectedPlayersPanels.forEach((pl) => {
+    //     let time = 60; 
+    //     pl.setTimer(`${'1'}:${'00'}`);
+    //     while (time >= 0) {
+    //       (function(time) {
+    //         setTimeout(function() {
+    //           let minutes = Math.floor((time) / 60);
+    //           let seconds = (time % (60)).toString().length === 1 ? '0' + (time % (60)).toString() : (time % (60)).toString()
+    //           pl.setTimer(`${minutes}:${seconds}`);
+    //         }, 1000 * (60 - time))
+    //       })(time--)
+    //       console.log(pl.returnLoginTextContent())
+    //       if (pl.login === pl.returnLoginTextContent()) {
+    //         break;
+    //       };
+    //     };
+    //     pl.setNickname(`${pl.login}: ${pl.rating}`)
+    //   });
+    // };
 
     if (fetchedData.game.numOfPlayers === dataToUpdate.length && !alreadyStarted) {
       buttons.setVisible('start');
@@ -236,16 +236,16 @@ const gameSocket = () => {
   document.getElementById('start').addEventListener('click', (e) => {
     e.preventDefault();
     buttons.hideAll();
-    socket.emit('clicked-start', fetchedData.user.login);
+    socket.emit('clicked-start', { login: fetchedData.user.login, rating: fetchedData.user.rating });
   });
 
   socket.on('is-ready', (user) => {
     players.forEach((player) => {
-      player.login === user ? player.setStatus('READY ;)', 'White') : console.log();
+      player.login === user.login ? player.setStatus('READY ;)', 'White') : console.log();
     });
 
-    if (playersToBackend.filter((player) => player.login === user).length === 0) {
-      playersToBackend.push({ login: user, numOfDices: 1, position: 0, dices: ['?'] });
+    if (playersToBackend.filter((player) => player.login === user.login).length === 0) {
+      playersToBackend.push({ login: user.login, numOfDices: 1, position: 0, rating: user.rating, dices: ['?'] });
     }
 
     if (buttons.isStartButtonNone() && players.filter((player) => player.returnPlayerStatus() === "NOT READY ;(").length === 0) {

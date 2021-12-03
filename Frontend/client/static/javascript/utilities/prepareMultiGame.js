@@ -30,6 +30,7 @@ const prepareMultiGame = async (cb) => {
     );
 
     let numOfPlayers = response.data.game.numOfPlayers;
+    let numOfAllDices = response.data.game.numOfAllDices;
         
     for (let i = 1; i < numOfPlayers; i++) {
       let playerDiv = document.createElement("div");
@@ -43,12 +44,12 @@ const prepareMultiGame = async (cb) => {
       gridDiv.prepend(playerDiv);
     }
   
-    for (let i = 0; i < numOfPlayers; i++) {
+    for (let i = 0; i < numOfAllDices; i++) {
       let stakeDiv = document.createElement("div");
       stakeDiv.classList.add('column');
-      stakeDiv.classList.add(`column-${numOfPlayers - i}`);
-      stakingTable.style.gridTemplateColumns = `repeat(${numOfPlayers}, 1fr)`;
-      stakeDiv.innerHTML = `<p class="staking-header">${SINGULAR[numOfPlayers - 1 - i]}</p>
+      stakeDiv.classList.add(`column-${numOfAllDices - i}`);
+      stakingTable.style.gridTemplateColumns = `repeat(${numOfAllDices}, 1fr)`;
+      stakeDiv.innerHTML = `<p class="staking-header">${SINGULAR[numOfAllDices - 1 - i]}</p>
                             <button class="staking-btn">ONES</button><br>
                             <button class="staking-btn">TWOS</button><br>
                             <button class="staking-btn">THREES</button><br>

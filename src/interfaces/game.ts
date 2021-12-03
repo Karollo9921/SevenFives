@@ -3,7 +3,7 @@ import { GameStatus } from '../utilities/gameStatus';
 
 export default interface InterfaceGame extends Document {
     numOfPlayers: number;
-    players: { login: string, numOfDices: number, position: number, dices: string[] }[];
+    players: { login: string, numOfDices: number, position: number, rating: number, dices: string[] }[];
     status: GameStatus;
     fullBacklog: object[];
     result: { place: number, player: string }[];

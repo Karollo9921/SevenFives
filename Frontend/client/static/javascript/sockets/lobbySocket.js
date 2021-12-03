@@ -20,8 +20,8 @@ const displayUsers = (users) => {
     let liNode = document.createElement("li");
     let divNode = document.createElement("div");
     let pNode = document.createElement("p");
-    let textnode = document.createTextNode(`${user.user}: ${user.rating}`)
-    pNode.appendChild(textnode)
+    pNode.innerHTML = `<a style="background-color: transparent;" target="_blank" href="${returnOrigin(false) + '/user/' + user.uid}" class="user-a-tag">${user.user}</a>: ${user.rating}`;
+    // pNode.appendChild(textnode);
     divNode.classList.add("green");
     pNode.classList.add(user.user)
     liNode.appendChild(divNode);
@@ -116,7 +116,7 @@ const lobbySocket = async () => {
     displayGameOnLobby(data.user, data.numOfPlayers, data.user_uid, data.game_id);
   });
 
-  socket.emit('dataToServer', { user: fetchedData.user.login, rating: fetchedData.user.rating });
+  socket.emit('dataToServer', { user: fetchedData.user.login, rating: fetchedData.user.rating, uid: fetchedData.user.uid });
   socket.emit('get-num-of-players-in-game', Array.from(document.getElementsByClassName('taken-seats')).map(ts => { return ts.id }));
 
   socket.on('updateUsersList', (users) => {

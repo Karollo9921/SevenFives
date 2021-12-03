@@ -4,15 +4,16 @@ import User from './models/user';
 import * as socketio from 'socket.io';
 
 const socketsToLobby = (io: socketio.Server) => {
-  var usersInLobby: { user: string, sid: string }[] = [];
+  var usersInLobby: { user: string, rating: number, uid: number, sid: string }[] = [];
   io.of('/api/play/multi-player-lobby').on('connection', async (socket: socketio.Socket) => {
 
     socket.on('dataToServer', (dataFromClient: object) => {
 
-        let userToAdd = { user: Object.values(dataFromClient)[0], rating: Object.values(dataFromClient)[1], sid: socket.id }
+        let userToAdd: { user: string, rating: number, uid: number, sid: string };
+        userToAdd = { user: Object.values(dataFromClient)[0], rating: Object.values(dataFromClient)[1], uid: Object.values(dataFromClient)[2], sid: socket.id };
         if (!usersInLobby.find(user => user === userToAdd)) {
-            usersInLobby.push(userToAdd)
-        }
+            usersInLobby.push(userToAdd);
+        };
 
         io.of('/api/play/multi-player-lobby').emit('updateUsersList', usersInLobby);
     });
@@ -115,6 +116,7 @@ const socketsToGame = async (io: socketio.Server) => {
                         login: game!.players[playerIndex].login, 
                         numOfDices: game!.players[playerIndex].numOfDices,
                         position: game!.players[playerIndex].position,
+                        rating: game!.players[playerIndex].rating,
                         dices: data.dices
                     };
                     await Game.updateOne({ _id: ns._id }, { players: game!.players });
@@ -126,10 +128,10 @@ const socketsToGame = async (io: socketio.Server) => {
                   io.of('/api/play/multi-player-lobby/' + ns._id).emit('the-die-is-cast', data.user);
               });
 
-              nsSocket.on('game-started-players', async (players: { login: string, numOfDices: number, position: number, dices: string[] }[]) => {
+              nsSocket.on('game-started-players', async (players: { login: string, numOfDices: number, position: number, rating: number, dices: string[] }[]) => {
                   try {
                       if (game!.players.length === 0) {
-                          players.forEach((player: { login: string, numOfDices: number, position: number, dices: string[] }) => {
+                          players.forEach((player: { login: string, numOfDices: number, position: number, rating: number, dices: string[] }) => {
                               let position = usersInTheGame.filter((user) => user.user === player.login)[0].position;
                               player.position = position;
                               game!.players.push(player);
@@ -213,6 +215,7 @@ const socketsToGame = async (io: socketio.Server) => {
                       login: game!.players[playerIndex].login, 
                       numOfDices: game!.players[playerIndex].numOfDices + 1,
                       position: game!.players[playerIndex].position,
+                      rating: game!.players[playerIndex].rating,
                       dices: Array.from({ length: game!.players[playerIndex].numOfDices + 1 > 5 ? 5 : game!.players[playerIndex].numOfDices + 1 }, (v, i) => '?')
                     };
 
